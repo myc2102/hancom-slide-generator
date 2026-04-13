@@ -4,166 +4,143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>뭐였더라 — 슬라이드 생성기</title>
-  <link rel="stylesheet" as="style" crossorigin
-    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/nickthedude/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <style>
-    :root {
-      --hcm-orange: #FC5E20;
-      --hcm-blue: #0071E3;
-      --hcm-mint: #28CD41;
-      --hcm-purple: #A259FF;
-      --hcm-rose: #FF375F;
-      --bg-primary: #000000;
-      --bg-card: #1C1C1E;
-      --border-card: 1px solid rgba(255,255,255,0.1);
-      --text-primary: #FFFFFF;
-      --text-secondary: #A1A1A6;
-      --text-tertiary: #636366;
-    }
+    :root { --hcm-orange:#FC5E20; --bg-primary:#000000; --bg-card:#1C1C1E; --border-card:1px solid rgba(255,255,255,0.1); --text-primary:#FFFFFF; --text-secondary:#A1A1A6; --text-tertiary:#636366; }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;overflow-x:hidden;}
+    .app-container{max-width:800px;margin:0 auto;padding:60px 24px 100px;}
+    .app-header{text-align:center;margin-bottom:48px;}
+    .logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;}
+    .app-title{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin-bottom:8px;}
+    .app-title .accent{color:var(--hcm-orange);}
+    .app-subtitle{font-size:15px;font-weight:500;color:var(--text-secondary);line-height:1.6;}
+    .input-section{background:var(--bg-card);border:var(--border-card);border-radius:24px;padding:32px;margin-bottom:24px;}
+    .section-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;}
+    .section-label .dot{width:6px;height:6px;border-radius:50%;background:var(--hcm-orange);}
+    .text-input{width:100%;min-height:180px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;color:var(--text-primary);font-family:inherit;font-size:15px;font-weight:500;line-height:1.7;resize:vertical;outline:none;transition:border-color 0.2s;}
+    .text-input::placeholder{color:var(--text-tertiary);}
+    .text-input:focus{border-color:var(--hcm-orange);}
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    /* 옵션 그리드 */
+    .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+    .option-card{background:var(--bg-card);border:var(--border-card);border-radius:16px;padding:20px;}
+    .option-card label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
 
-    body {
-      font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    /* 테마 선택 토글 */
+    .theme-toggle{display:flex;gap:8px;}
+    .theme-btn{flex:1;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-secondary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .theme-btn.active{border-color:var(--hcm-orange);background:rgba(252,94,32,0.1);color:var(--hcm-orange);}
+    .theme-btn:hover:not(.active){border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);}
 
-    .app-container { max-width: 800px; margin: 0 auto; padding: 60px 24px 100px; }
+    /* 장수 선택 */
+    .count-control{display:flex;align-items:center;gap:8px;justify-content:center;}
+    .count-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-size:18px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+    .count-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
+    .count-value{font-size:22px;font-weight:700;min-width:32px;text-align:center;}
 
-    .app-header { text-align: center; margin-bottom: 48px; }
-    .logo-area { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; }
-    .logo-area svg { flex-shrink: 0; }
-    .app-title { font-size: 36px; font-weight: 900; letter-spacing: -1px; line-height: 1.2; margin-bottom: 8px; }
-    .app-title .accent { color: var(--hcm-orange); }
-    .app-subtitle { font-size: 15px; font-weight: 500; color: var(--text-secondary); line-height: 1.6; }
+    /* 디자인 스타일 입력 */
+    .style-section{margin-bottom:24px;}
+    .style-input{width:100%;height:48px;background:var(--bg-card);border:var(--border-card);border-radius:14px;padding:0 20px;color:var(--text-primary);font-family:inherit;font-size:14px;font-weight:500;outline:none;transition:border-color 0.2s;}
+    .style-input::placeholder{color:var(--text-tertiary);}
+    .style-input:focus{border-color:var(--hcm-orange);}
+    .style-hint{font-size:12px;color:var(--text-tertiary);margin-top:8px;line-height:1.5;}
 
-    .input-section { background: var(--bg-card); border: var(--border-card); border-radius: 24px; padding: 32px; margin-bottom: 24px; }
-    .section-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
-    .section-label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hcm-orange); }
+    /* 생성 버튼 */
+    .generate-btn{width:100%;height:56px;border-radius:16px;border:none;background:var(--hcm-orange);color:#FFF;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:24px;}
+    .generate-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+    .generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+    .generate-btn .btn-content{display:flex;align-items:center;justify-content:center;gap:8px;}
 
-    .text-input {
-      width: 100%; min-height: 200px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px; padding: 20px;
-      color: var(--text-primary); font-family: inherit; font-size: 15px; font-weight: 500; line-height: 1.7;
-      resize: vertical; outline: none; transition: border-color 0.2s;
-    }
-    .text-input::placeholder { color: var(--text-tertiary); }
-    .text-input:focus { border-color: var(--hcm-orange); }
+    /* 로딩 */
+    .loading-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;}
+    .loading-overlay.active{display:flex;}
+    .spinner{width:48px;height:48px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--hcm-orange);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:24px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .loading-text{font-size:16px;font-weight:700;margin-bottom:8px;}
+    .loading-sub{font-size:13px;color:var(--text-secondary);}
 
-    .options-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-    .slide-count-selector { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: var(--border-card); border-radius: 14px; padding: 10px 20px; }
-    .slide-count-selector label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
-    .count-control { display: flex; align-items: center; gap: 8px; }
-    .count-btn {
-      width: 32px; height: 32px; border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
-      color: var(--text-primary); font-size: 18px; font-weight: 500;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-    }
-    .count-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--hcm-orange); }
-    .count-value { font-size: 18px; font-weight: 700; color: var(--text-primary); min-width: 24px; text-align: center; }
+    /* 결과 */
+    .result-section{display:none;}
+    .result-section.active{display:block;}
+    .result-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+    .result-header .bar{width:4px;height:24px;background:var(--hcm-orange);border-radius:2px;}
+    .result-header h2{font-size:20px;font-weight:700;}
 
-    .generate-btn {
-      flex: 1; height: 52px; border-radius: 14px; border: none;
-      background: var(--hcm-orange); color: #FFFFFF;
-      font-family: inherit; font-size: 16px; font-weight: 700;
-      cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
-    }
-    .generate-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
-    .generate-btn:active:not(:disabled) { transform: translateY(0); }
-    .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .generate-btn .btn-content { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .download-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+    .dl-btn{height:42px;padding:0 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+    .dl-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
+    .dl-btn.primary{background:var(--hcm-orange);border-color:var(--hcm-orange);}
+    .dl-btn.primary:hover{filter:brightness(1.1);}
+    .dl-btn .badge{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;background:rgba(255,255,255,0.15);color:var(--text-secondary);}
 
-    .loading-overlay { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
-    .loading-overlay.active { display: flex; }
-    .spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--hcm-orange); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 24px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-    .loading-sub { font-size: 13px; color: var(--text-secondary); }
+    .action-row{display:flex;gap:10px;margin-bottom:20px;}
+    .action-btn{height:40px;padding:0 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+    .action-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
 
-    .result-section { display: none; }
-    .result-section.active { display: block; }
-    .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .result-title { display: flex; align-items: center; gap: 10px; }
-    .result-title .bar { width: 4px; height: 24px; background: var(--hcm-orange); border-radius: 2px; }
-    .result-title h2 { font-size: 20px; font-weight: 700; }
-    .result-actions { display: flex; gap: 10px; }
+    .preview-wrapper{background:var(--bg-card);border:var(--border-card);border-radius:20px;padding:20px;margin-bottom:16px;overflow:hidden;}
+    .preview-scaler{width:1920px;height:1080px;transform-origin:top left;overflow:hidden;}
+    .preview-nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 0 0;}
+    .nav-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:var(--text-primary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+    .nav-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
+    .nav-info{font-size:13px;font-weight:500;color:var(--text-secondary);}
+    .nav-info .current{color:var(--hcm-orange);font-weight:700;}
 
-    .action-btn {
-      height: 40px; padding: 0 20px; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
-      color: var(--text-primary); font-family: inherit; font-size: 13px; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s;
-    }
-    .action-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--hcm-orange); }
-    .action-btn.primary { background: var(--hcm-orange); border-color: var(--hcm-orange); }
-    .action-btn.primary:hover { filter: brightness(1.1); }
-
-    .preview-wrapper { background: var(--bg-card); border: var(--border-card); border-radius: 20px; padding: 20px; margin-bottom: 16px; }
-    .preview-frame { width: 100%; aspect-ratio: 16/9; border: none; border-radius: 12px; background: #000; }
-    .preview-nav { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 12px 0 0; }
-    .nav-btn {
-      width: 36px; height: 36px; border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
-      color: var(--text-primary); font-size: 16px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-    }
-    .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--hcm-orange); }
-    .nav-info { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
-    .nav-info .current { color: var(--hcm-orange); font-weight: 700; }
-
-    .error-box { display: none; background: rgba(255,55,95,0.1); border: 1px solid rgba(255,55,95,0.3); border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; }
-    .error-box.active { display: flex; align-items: flex-start; gap: 12px; }
-    .error-icon { flex-shrink: 0; width: 20px; height: 20px; color: var(--hcm-rose); }
-    .error-text { font-size: 14px; color: var(--hcm-rose); line-height: 1.5; }
-
-    .app-footer { text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); }
-    .app-footer p { font-size: 12px; color: var(--text-tertiary); }
-
-    @media (max-width: 600px) {
-      .app-container { padding: 32px 16px 80px; }
-      .app-title { font-size: 28px; }
-      .input-section { padding: 20px; border-radius: 20px; }
-      .options-row { flex-direction: column; }
-      .slide-count-selector { width: 100%; justify-content: center; }
-      .generate-btn { width: 100%; }
-      .result-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .dl-progress{display:none;align-items:center;gap:12px;background:rgba(252,94,32,0.1);border:1px solid rgba(252,94,32,0.3);border-radius:12px;padding:14px 20px;margin-bottom:20px;}
+    .dl-progress.active{display:flex;}
+    .dl-progress .mini-spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--hcm-orange);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+    .dl-progress-text{font-size:13px;color:var(--hcm-orange);font-weight:500;}
+    .error-box{display:none;background:rgba(255,55,95,0.1);border:1px solid rgba(255,55,95,0.3);border-radius:16px;padding:20px 24px;margin-bottom:24px;}
+    .error-box.active{display:flex;align-items:flex-start;gap:12px;}
+    .error-icon{flex-shrink:0;width:20px;height:20px;color:#FF375F;}
+    .error-text{font-size:14px;color:#FF375F;line-height:1.5;}
+    .app-footer{text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);}
+    .app-footer p{font-size:12px;color:var(--text-tertiary);}
+    #captureZone{position:fixed;left:-99999px;top:0;width:1920px;overflow:hidden;}
+    @media(max-width:600px){
+      .app-container{padding:32px 16px 80px;}.app-title{font-size:28px;}.input-section{padding:20px;border-radius:20px;}
+      .options-grid{grid-template-columns:1fr;}.generate-btn{height:52px;font-size:16px;}
+      .download-group{width:100%;}.dl-btn{flex:1;justify-content:center;}
     }
   </style>
 </head>
 <body>
-
   <div class="app-container">
     <header class="app-header">
       <div class="logo-area">
-        <svg width="120" height="30" viewBox="0 0 285 71" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M68.3279 15.2893L53.7202 55.8272H62.2753L64.9525 48.1139H81.1314L83.8085 55.8272H92.4219L77.814 15.2893H68.3279ZM67.1639 41.6184L73.042 24.6843L78.9197 41.6184H67.1639Z" fill="white"/>
-          <path d="M122.219 43.1265L103.77 15.2893H95.6221V55.8272H103.77V28.0478L122.219 55.8272H130.366V15.2893H122.219V43.1265Z" fill="white"/>
-          <path d="M149.483 23.7856C151.326 22.6835 153.431 22.1327 155.798 22.1327C158.009 22.1327 159.959 22.6164 161.647 23.5822C163.334 24.5495 164.644 25.999 165.575 27.9321H174.945C173.587 23.8344 171.2 20.6249 167.787 18.305C164.372 15.9854 160.396 14.8254 155.856 14.8254C151.976 14.8254 148.474 15.7053 145.351 17.4642C142.228 19.2237 139.764 21.6786 137.96 24.8295C136.156 27.981 135.254 31.5477 135.254 35.5289C135.254 39.5117 136.156 43.0684 137.96 46.2C139.764 49.3317 142.228 51.7776 145.351 53.5364C148.474 55.2957 151.976 56.1751 155.856 56.1751C160.434 56.1751 164.42 55.0247 167.816 52.7243C171.21 50.4245 173.587 47.2057 174.945 43.0684H165.575C164.644 45.002 163.334 46.461 161.647 47.4464C159.959 48.4327 158.009 48.9257 155.798 48.9257C153.431 48.9257 151.326 48.3746 149.483 47.2726C147.64 46.1707 146.204 44.6048 145.177 42.575C144.148 40.5451 143.634 38.1967 143.634 35.5287C143.634 32.8231 144.148 30.4644 145.177 28.4539C146.204 26.4443 147.64 24.8871 149.483 23.7856Z" fill="white"/>
-          <path d="M208.728 17.4349C205.566 15.657 202.065 14.7671 198.223 14.7671C194.421 14.7671 190.929 15.657 187.748 17.4349C184.566 19.2137 182.045 21.6786 180.182 24.8293C178.32 27.981 177.389 31.5277 177.389 35.4713C177.389 39.4536 178.32 43.0203 180.182 46.1708C182.044 49.3224 184.566 51.7873 187.748 53.5649C190.929 55.3438 194.421 56.2325 198.223 56.2325C202.026 56.2325 205.518 55.3435 208.699 53.5649C211.88 51.7871 214.393 49.3224 216.236 46.1708C218.078 43.0203 219 39.4536 219 35.4713C219 31.5277 218.078 27.981 216.236 24.8293C214.393 21.6789 211.89 19.2137 208.728 17.4349ZM209.048 42.6045C208.001 44.6541 206.546 46.2291 204.683 47.3312C202.821 48.4328 200.668 48.9836 198.223 48.9836C195.779 48.9836 193.616 48.433 191.734 47.3312C189.852 46.2291 188.388 44.6541 187.341 42.6045C186.293 40.5557 185.77 38.1779 185.77 35.4716C185.77 32.7655 186.293 30.3968 187.341 28.367C188.388 26.3374 189.852 24.7815 191.734 23.6987C193.616 22.6164 195.779 22.0746 198.223 22.0746C200.668 22.0746 202.821 22.6164 204.683 23.6987C206.546 24.7815 208.001 26.3374 209.048 28.367C210.096 30.3968 210.62 32.7655 210.62 35.4716C210.62 38.1779 210.096 40.5557 209.048 42.6045Z" fill="white"/>
-          <path d="M258.982 15.3472L246.062 45.4459L233.142 15.3472H223.888V55.8272H232.036V29.4981L242.977 55.8272H249.146L260.029 29.4981V55.8272H268.177V15.3472H258.982Z" fill="white"/>
-          <path d="M24.9666 15.3472H16.8232V31.2013H24.9666V15.3472Z" fill="white"/>
-          <path d="M24.9666 39.3225H16.8232V55.8268H24.9666V39.3225Z" fill="white"/>
-          <path d="M50.5198 15.3472H42.3765V31.2013H50.5198V15.3472Z" fill="white"/>
-          <path d="M50.5195 31.2043H24.9663V39.3189H50.5195V31.2043Z" fill="#FC5E20"/>
-          <path d="M50.5198 39.3225H42.3765V55.8268H50.5198V39.3225Z" fill="white"/>
-        </svg>
+        <svg width="120" height="30" viewBox="0 0 285 71" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M68.3279 15.2893L53.7202 55.8272H62.2753L64.9525 48.1139H81.1314L83.8085 55.8272H92.4219L77.814 15.2893H68.3279ZM67.1639 41.6184L73.042 24.6843L78.9197 41.6184H67.1639Z" fill="white"/><path d="M122.219 43.1265L103.77 15.2893H95.6221V55.8272H103.77V28.0478L122.219 55.8272H130.366V15.2893H122.219V43.1265Z" fill="white"/><path d="M149.483 23.7856C151.326 22.6835 153.431 22.1327 155.798 22.1327C158.009 22.1327 159.959 22.6164 161.647 23.5822C163.334 24.5495 164.644 25.999 165.575 27.9321H174.945C173.587 23.8344 171.2 20.6249 167.787 18.305C164.372 15.9854 160.396 14.8254 155.856 14.8254C151.976 14.8254 148.474 15.7053 145.351 17.4642C142.228 19.2237 139.764 21.6786 137.96 24.8295C136.156 27.981 135.254 31.5477 135.254 35.5289C135.254 39.5117 136.156 43.0684 137.96 46.2C139.764 49.3317 142.228 51.7776 145.351 53.5364C148.474 55.2957 151.976 56.1751 155.856 56.1751C160.434 56.1751 164.42 55.0247 167.816 52.7243C171.21 50.4245 173.587 47.2057 174.945 43.0684H165.575C164.644 45.002 163.334 46.461 161.647 47.4464C159.959 48.4327 158.009 48.9257 155.798 48.9257C153.431 48.9257 151.326 48.3746 149.483 47.2726C147.64 46.1707 146.204 44.6048 145.177 42.575C144.148 40.5451 143.634 38.1967 143.634 35.5287C143.634 32.8231 144.148 30.4644 145.177 28.4539C146.204 26.4443 147.64 24.8871 149.483 23.7856Z" fill="white"/><path d="M208.728 17.4349C205.566 15.657 202.065 14.7671 198.223 14.7671C194.421 14.7671 190.929 15.657 187.748 17.4349C184.566 19.2137 182.045 21.6786 180.182 24.8293C178.32 27.981 177.389 31.5277 177.389 35.4713C177.389 39.4536 178.32 43.0203 180.182 46.1708C182.044 49.3224 184.566 51.7873 187.748 53.5649C190.929 55.3438 194.421 56.2325 198.223 56.2325C202.026 56.2325 205.518 55.3435 208.699 53.5649C211.88 51.7871 214.393 49.3224 216.236 46.1708C218.078 43.0203 219 39.4536 219 35.4713C219 31.5277 218.078 27.981 216.236 24.8293C214.393 21.6789 211.89 19.2137 208.728 17.4349ZM209.048 42.6045C208.001 44.6541 206.546 46.2291 204.683 47.3312C202.821 48.4328 200.668 48.9836 198.223 48.9836C195.779 48.9836 193.616 48.433 191.734 47.3312C189.852 46.2291 188.388 44.6541 187.341 42.6045C186.293 40.5557 185.77 38.1779 185.77 35.4716C185.77 32.7655 186.293 30.3968 187.341 28.367C188.388 26.3374 189.852 24.7815 191.734 23.6987C193.616 22.6164 195.779 22.0746 198.223 22.0746C200.668 22.0746 202.821 22.6164 204.683 23.6987C206.546 24.7815 208.001 26.3374 209.048 28.367C210.096 30.3968 210.62 32.7655 210.62 35.4716C210.62 38.1779 210.096 40.5557 209.048 42.6045Z" fill="white"/><path d="M258.982 15.3472L246.062 45.4459L233.142 15.3472H223.888V55.8272H232.036V29.4981L242.977 55.8272H249.146L260.029 29.4981V55.8272H268.177V15.3472H258.982Z" fill="white"/><path d="M24.9666 15.3472H16.8232V31.2013H24.9666V15.3472Z" fill="white"/><path d="M24.9666 39.3225H16.8232V55.8268H24.9666V39.3225Z" fill="white"/><path d="M50.5198 15.3472H42.3765V31.2013H50.5198V15.3472Z" fill="white"/><path d="M50.5195 31.2043H24.9663V39.3189H50.5195V31.2043Z" fill="#FC5E20"/><path d="M50.5198 39.3225H42.3765V55.8268H50.5198V39.3225Z" fill="white"/></svg>
       </div>
       <h1 class="app-title"><span class="accent">뭐였더라</span> 슬라이드 생성기</h1>
       <p class="app-subtitle">텍스트를 입력하면 한컴 브랜드 스타일의 슬라이드를 자동으로 생성합니다</p>
     </header>
 
+    <!-- 내용 입력 -->
     <div class="input-section">
       <div class="section-label"><span class="dot"></span>내용 입력</div>
       <textarea id="userInput" class="text-input" placeholder="여기에 발표 내용, 회의록, 기획안 등을 붙여넣으세요.&#10;&#10;예시:&#10;• AI 기반 회의록 자동 요약 서비스의 핵심 기능 소개&#10;• Q2 매출 실적 보고 및 하반기 전략&#10;• 신규 서비스 런칭 제안서"></textarea>
     </div>
 
-    <div class="options-row">
-      <div class="slide-count-selector">
+    <!-- 테마 + 장수 -->
+    <div class="options-grid">
+      <div class="option-card">
+        <label>테마</label>
+        <div class="theme-toggle">
+          <button class="theme-btn active" id="themeDark" onclick="setTheme('dark')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            다크
+          </button>
+          <button class="theme-btn" id="themeLight" onclick="setTheme('light')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            라이트
+          </button>
+        </div>
+      </div>
+      <div class="option-card">
         <label>슬라이드 장수</label>
         <div class="count-control">
           <button class="count-btn" onclick="changeCount(-1)">−</button>
@@ -171,41 +148,50 @@
           <button class="count-btn" onclick="changeCount(1)">+</button>
         </div>
       </div>
-      <button id="generateBtn" class="generate-btn" onclick="generateSlides()">
-        <span class="btn-content">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          슬라이드 생성하기
-        </span>
-      </button>
     </div>
 
+    <!-- 디자인 스타일 -->
+    <div class="style-section">
+      <input type="text" id="designStyle" class="style-input" placeholder="디자인 스타일을 입력하세요 (선택사항)">
+      <p class="style-hint">예: 애플스러운 모던함 / 카드 그리드 중심 / 데이터 시각화 강조 / 타임라인 흐름으로</p>
+    </div>
+
+    <!-- 생성 버튼 -->
+    <button id="generateBtn" class="generate-btn" onclick="generateSlides()">
+      <span class="btn-content">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        슬라이드 생성하기
+      </span>
+    </button>
+
+    <!-- 에러 -->
     <div id="errorBox" class="error-box">
-      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
       <span id="errorText" class="error-text"></span>
     </div>
 
+    <!-- 로딩 -->
     <div id="loadingOverlay" class="loading-overlay">
       <div class="spinner"></div>
       <p class="loading-text">슬라이드를 생성하고 있어요</p>
       <p class="loading-sub" id="loadingSub">Gemini가 한컴 스타일로 디자인 중...</p>
     </div>
 
+    <!-- 결과 -->
     <div id="resultSection" class="result-section">
-      <div class="result-header">
-        <div class="result-title"><span class="bar"></span><h2>생성 결과</h2></div>
-        <div class="result-actions">
-          <button class="action-btn" onclick="openInNewTab()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            새 탭에서 열기
-          </button>
-          <button class="action-btn primary" onclick="downloadHTML()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            HTML 다운로드
-          </button>
-        </div>
+      <div class="result-header"><span class="bar"></span><h2>생성 결과</h2></div>
+      <div id="dlProgress" class="dl-progress"><div class="mini-spinner"></div><span class="dl-progress-text" id="dlProgressText">준비 중...</span></div>
+      <div class="download-group">
+        <button class="dl-btn" onclick="downloadHTML()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> HTML</button>
+        <button class="dl-btn" onclick="downloadPNG()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PNG <span class="badge">ZIP</span></button>
+        <button class="dl-btn" onclick="downloadPDF()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PDF</button>
+        <button class="dl-btn primary" onclick="downloadPPTX()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PPTX</button>
       </div>
-      <div class="preview-wrapper">
-        <iframe id="previewFrame" class="preview-frame" sandbox="allow-same-origin allow-scripts"></iframe>
+      <div class="action-row">
+        <button class="action-btn" onclick="openInNewTab()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> 새 탭에서 열기</button>
+      </div>
+      <div class="preview-wrapper" id="previewWrapper">
+        <div class="preview-scaler" id="previewScaler"></div>
         <div class="preview-nav">
           <button class="nav-btn" onclick="navigateSlide(-1)">◀</button>
           <span class="nav-info"><span class="current" id="currentSlide">1</span> / <span id="totalSlides">1</span></span>
@@ -213,133 +199,85 @@
         </div>
       </div>
     </div>
-
     <footer class="app-footer"><p>© 2026 한글과컴퓨터 · 크루 뭐였더라</p></footer>
   </div>
+  <div id="captureZone"></div>
 
   <script>
-    const GAS_URL = "https://script.google.com/a/macros/hancom.com/s/AKfycbwfAQfCx0hfnGMnv4jInzNsLyFAlxF_89tav1v_1iQdxQyYR2G9iRKilhxjT2s8XRZ6/exec";
+    const GAS_URL="https://script.google.com/a/macros/hancom.com/s/AKfycbwfAQfCx0hfnGMnv4jInzNsLyFAlxF_89tav1v_1iQdxQyYR2G9iRKilhxjT2s8XRZ6/exec";
+    let generatedHTML="",currentSlideIndex=0,totalSlideCount=0,slideCount=5,slideElements=[];
+    let selectedTheme="dark";
+    const loadingMessages=["Gemini가 한컴 스타일로 디자인 중...","슬라이드 구조를 잡고 있어요...","브랜드 컬러를 입히는 중...","거의 다 됐어요, 조금만 기다려주세요..."];
 
-    let generatedHTML = "";
-    let currentSlideIndex = 0;
-    let totalSlideCount = 0;
-    let slideCount = 5;
+    function setTheme(t){selectedTheme=t;document.getElementById("themeDark").classList.toggle("active",t==="dark");document.getElementById("themeLight").classList.toggle("active",t==="light");}
+    function changeCount(d){slideCount=Math.max(1,Math.min(10,slideCount+d));document.getElementById("slideCount").textContent=slideCount;}
 
-    const loadingMessages = [
-      "Gemini가 한컴 스타일로 디자인 중...",
-      "슬라이드 구조를 잡고 있어요...",
-      "브랜드 컬러를 입히는 중...",
-      "거의 다 됐어요, 조금만 기다려주세요..."
-    ];
-
-    function changeCount(delta) {
-      slideCount = Math.max(1, Math.min(10, slideCount + delta));
-      document.getElementById("slideCount").textContent = slideCount;
-    }
-
-    async function generateSlides() {
-      const text = document.getElementById("userInput").value.trim();
-      if (!text) { showError("텍스트를 입력해주세요."); return; }
-
-      hideError(); hideResult(); showLoading();
-      document.getElementById("generateBtn").disabled = true;
-
-      let msgIndex = 0;
-      const msgInterval = setInterval(() => {
-        msgIndex = (msgIndex + 1) % loadingMessages.length;
-        document.getElementById("loadingSub").textContent = loadingMessages[msgIndex];
-      }, 3000);
-
-      try {
-        // ✅ JSONP 방식 — CORS 문제 완전 우회
-        const callbackName = "cb_" + Date.now();
-        const params = new URLSearchParams({
-          text: text,
-          slideCount: slideCount,
-          callback: callbackName
+    async function generateSlides(){
+      const text=document.getElementById("userInput").value.trim();
+      if(!text){showError("텍스트를 입력해주세요.");return;}
+      const designStyle=document.getElementById("designStyle").value.trim();
+      hideError();hideResult();showLoading();document.getElementById("generateBtn").disabled=true;
+      let mi=0;const iv=setInterval(()=>{mi=(mi+1)%loadingMessages.length;document.getElementById("loadingSub").textContent=loadingMessages[mi];},3000);
+      try{
+        const cb="cb_"+Date.now(),params=new URLSearchParams({text,slideCount,theme:selectedTheme,designStyle,callback:cb});
+        const data=await new Promise((res,rej)=>{
+          const to=setTimeout(()=>{cl();rej(new Error("요청 시간 초과 (2분)"));},120000);
+          let st;window[cb]=function(r){cl();res(r);};
+          function cl(){clearTimeout(to);delete window[cb];if(st?.parentNode)st.parentNode.removeChild(st);}
+          st=document.createElement("script");st.src=GAS_URL+"?"+params.toString();
+          st.onerror=function(){cl();rej(new Error("서버 연결 실패"));};document.head.appendChild(st);
         });
-
-        const data = await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => { cleanup(); reject(new Error("요청 시간이 초과되었습니다 (2분). 다시 시도해주세요.")); }, 120000);
-
-          let scriptTag;
-
-          window[callbackName] = function(response) { cleanup(); resolve(response); };
-
-          function cleanup() {
-            clearTimeout(timeout);
-            delete window[callbackName];
-            if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
-          }
-
-          scriptTag = document.createElement("script");
-          scriptTag.src = GAS_URL + "?" + params.toString();
-          scriptTag.onerror = function() { cleanup(); reject(new Error("서버에 연결할 수 없습니다. URL을 확인해주세요.")); };
-          document.head.appendChild(scriptTag);
-        });
-
-        if (!data.success) throw new Error(data.error || "알 수 없는 오류가 발생했습니다.");
-
-        generatedHTML = data.html;
-        renderPreview(generatedHTML);
-        showResult();
-
-      } catch (error) {
-        showError("생성 중 오류가 발생했어요: " + error.message);
-      } finally {
-        clearInterval(msgInterval);
-        hideLoading();
-        document.getElementById("generateBtn").disabled = false;
-      }
+        if(!data.success)throw new Error(data.error||"알 수 없는 오류");
+        generatedHTML=data.html;renderPreview(generatedHTML);showResult();
+      }catch(e){showError("생성 중 오류: "+e.message);}
+      finally{clearInterval(iv);hideLoading();document.getElementById("generateBtn").disabled=false;}
     }
 
-    function renderPreview(html) {
-      const iframe = document.getElementById("previewFrame");
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open(); doc.write(html); doc.close();
-      setTimeout(() => {
-        const slides = doc.querySelectorAll(".slide-container");
-        totalSlideCount = Math.max(slides.length, 1);
-        currentSlideIndex = 0;
-        document.getElementById("totalSlides").textContent = totalSlideCount;
-        document.getElementById("currentSlide").textContent = 1;
-        if (slides.length > 0) scrollToSlide(0);
-      }, 1000);
+    function renderPreview(html){
+      const scaler=document.getElementById("previewScaler"),wrapper=document.getElementById("previewWrapper");
+      const parser=new DOMParser(),doc=parser.parseFromString(html,"text/html");
+      const styles=doc.querySelectorAll("style, link[rel='stylesheet']");let styleHTML="";styles.forEach(s=>styleHTML+=s.outerHTML);
+      const slides=doc.querySelectorAll(".slide-container");slideElements=[];
+      if(slides.length===0){scaler.innerHTML=styleHTML+doc.body.innerHTML;slideElements=[scaler.innerHTML];totalSlideCount=1;}
+      else{slides.forEach(s=>slideElements.push(s.outerHTML));totalSlideCount=slideElements.length;scaler.innerHTML=styleHTML+slideElements[0];}
+      currentSlideIndex=0;document.getElementById("totalSlides").textContent=totalSlideCount;document.getElementById("currentSlide").textContent=1;
+      requestAnimationFrame(()=>{const w=wrapper.clientWidth-40;const scale=w/1920;scaler.style.transform=`scale(${scale})`;scaler.style.height="1080px";wrapper.style.height=(1080*scale+80)+"px";});
     }
 
-    function navigateSlide(delta) {
-      currentSlideIndex = Math.max(0, Math.min(totalSlideCount - 1, currentSlideIndex + delta));
-      document.getElementById("currentSlide").textContent = currentSlideIndex + 1;
-      scrollToSlide(currentSlideIndex);
+    function navigateSlide(d){
+      if(slideElements.length<=1)return;currentSlideIndex=Math.max(0,Math.min(totalSlideCount-1,currentSlideIndex+d));
+      document.getElementById("currentSlide").textContent=currentSlideIndex+1;
+      const scaler=document.getElementById("previewScaler"),parser=new DOMParser(),doc=parser.parseFromString(generatedHTML,"text/html");
+      const styles=doc.querySelectorAll("style, link[rel='stylesheet']");let sh="";styles.forEach(s=>sh+=s.outerHTML);
+      scaler.innerHTML=sh+slideElements[currentSlideIndex];
     }
 
-    function scrollToSlide(index) {
-      const iframe = document.getElementById("previewFrame");
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      const slides = doc.querySelectorAll(".slide-container");
-      if (slides[index]) slides[index].scrollIntoView({ behavior: "smooth" });
+    function openInNewTab(){if(!generatedHTML)return;const w=window.open("","_blank");w.document.write(generatedHTML);w.document.close();}
+    function downloadHTML(){if(!generatedHTML)return;saveAs(new Blob([generatedHTML],{type:"text/html;charset=utf-8"}),"hancom-slide-"+getDateStr()+".html");}
+
+    async function captureSlides(cb){
+      const zone=document.getElementById("captureZone");zone.innerHTML=generatedHTML;await new Promise(r=>setTimeout(r,2000));
+      const slides=zone.querySelectorAll(".slide-container");
+      if(slides.length===0){const c=await html2canvas(zone,{scale:1,useCORS:true,width:1920,height:1080});zone.innerHTML="";return[c];}
+      const cs=[];for(let i=0;i<slides.length;i++){if(cb)cb(i+1,slides.length);cs.push(await html2canvas(slides[i],{scale:1,useCORS:true,width:1920,height:1080}));}
+      zone.innerHTML="";return cs;
     }
 
-    function openInNewTab() {
-      if (!generatedHTML) return;
-      const w = window.open("", "_blank"); w.document.write(generatedHTML); w.document.close();
-    }
+    async function downloadPNG(){if(!generatedHTML)return;showDlProgress("PNG 캡처 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("ZIP 생성 중...");const zip=new JSZip();cs.forEach((c,i)=>{zip.file(`slide-${String(i+1).padStart(2,"0")}.png`,c.toDataURL("image/png").split(",")[1],{base64:true});});saveAs(await zip.generateAsync({type:"blob"}),"hancom-slides-"+getDateStr()+".zip");}catch(e){showError("PNG 오류: "+e.message);}finally{hideDlProgress();}}
+    async function downloadPDF(){if(!generatedHTML)return;showDlProgress("PDF 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PDF 생성 중...");const{jsPDF}=window.jspdf,pdf=new jsPDF({orientation:"landscape",unit:"px",format:[1920,1080]});cs.forEach((c,i)=>{if(i>0)pdf.addPage([1920,1080],"landscape");pdf.addImage(c.toDataURL("image/png"),"PNG",0,0,1920,1080);});pdf.save("hancom-slides-"+getDateStr()+".pdf");}catch(e){showError("PDF 오류: "+e.message);}finally{hideDlProgress();}}
+    async function downloadPPTX(){if(!generatedHTML)return;showDlProgress("PPTX 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PPTX 생성 중...");const pptx=new PptxGenJS();pptx.defineLayout({name:"HANCOM",width:13.333,height:7.5});pptx.layout="HANCOM";const zone=document.getElementById("captureZone");zone.innerHTML=generatedHTML;await new Promise(r=>setTimeout(r,500));const slideEls=zone.querySelectorAll(".slide-container");cs.forEach((c,i)=>{updateDlProgress(`슬라이드 ${i+1}/${cs.length} PPTX 변환 중...`);const slide=pptx.addSlide();slide.addImage({data:c.toDataURL("image/png"),x:0,y:0,w:13.333,h:7.5});if(slideEls[i]){const txts=slideEls[i].querySelectorAll("h1,h2,h3,h4,p,span,li,td,th,footer");const added=new Set();txts.forEach(el=>{const t=el.innerText?.trim();if(!t||t.length<2||added.has(t))return;added.add(t);const r=el.getBoundingClientRect(),sr=slideEls[i].getBoundingClientRect();const xi=((r.left-sr.left)/1920)*13.333,yi=((r.top-sr.top)/1080)*7.5;const wi=Math.min((r.width/1920)*13.333,13.333-xi),hi=(r.height/1080)*7.5;if(wi<0.3||hi<0.1||xi<0||yi<0||xi>13||yi>7.5)return;const st=window.getComputedStyle(el);slide.addText(t,{x:xi,y:yi,w:wi,h:hi,fontSize:Math.max(8,Math.min(Math.round(parseFloat(st.fontSize)*0.75),60)),fontFace:"Pretendard",color:rgbToHex(st.color),bold:parseInt(st.fontWeight)>=700,valign:"top",wrap:true,transparent:true});});}});zone.innerHTML="";await pptx.writeFile({fileName:"hancom-slides-"+getDateStr()+".pptx"});}catch(e){showError("PPTX 오류: "+e.message);}finally{hideDlProgress();}}
 
-    function downloadHTML() {
-      if (!generatedHTML) return;
-      const blob = new Blob([generatedHTML], { type: "text/html;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = "hancom-slide-" + new Date().toISOString().slice(0, 10) + ".html";
-      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    }
-
-    function showLoading() { document.getElementById("loadingOverlay").classList.add("active"); }
-    function hideLoading() { document.getElementById("loadingOverlay").classList.remove("active"); }
-    function showResult() { document.getElementById("resultSection").classList.add("active"); }
-    function hideResult() { document.getElementById("resultSection").classList.remove("active"); }
-    function showError(msg) { document.getElementById("errorText").textContent = msg; document.getElementById("errorBox").classList.add("active"); }
-    function hideError() { document.getElementById("errorBox").classList.remove("active"); }
+    function getDateStr(){return new Date().toISOString().slice(0,10);}
+    function rgbToHex(rgb){if(!rgb||rgb==="transparent")return"FFFFFF";const m=rgb.match(/\d+/g);if(!m||m.length<3)return"FFFFFF";return m.slice(0,3).map(x=>parseInt(x).toString(16).padStart(2,"0")).join("").toUpperCase();}
+    function showLoading(){document.getElementById("loadingOverlay").classList.add("active");}
+    function hideLoading(){document.getElementById("loadingOverlay").classList.remove("active");}
+    function showResult(){document.getElementById("resultSection").classList.add("active");}
+    function hideResult(){document.getElementById("resultSection").classList.remove("active");}
+    function showError(m){document.getElementById("errorText").textContent=m;document.getElementById("errorBox").classList.add("active");}
+    function hideError(){document.getElementById("errorBox").classList.remove("active");}
+    function showDlProgress(m){document.getElementById("dlProgress").classList.add("active");document.getElementById("dlProgressText").textContent=m;}
+    function updateDlProgress(m){document.getElementById("dlProgressText").textContent=m;}
+    function hideDlProgress(){document.getElementById("dlProgress").classList.remove("active");}
   </script>
 </body>
 </html>
