@@ -398,7 +398,19 @@
     function hideLoading(){document.getElementById("loadingOverlay").classList.remove("active");}
     function showResult(){document.getElementById("resultSection").classList.add("active");}
     function hideResult(){document.getElementById("resultSection").classList.remove("active");}
-    function showError(m){document.getElementById("errorText").textContent=m;document.getElementById("errorBox").classList.add("active");}
+    function showError(m){
+  // 영어 에러를 한국어로 번역
+  var kr = m;
+  if(m.includes("429") || m.includes("quota")) kr = "요청이 너무 빈번합니다. 30초 후 다시 시도해주세요.";
+  else if(m.includes("404") || m.includes("not found")) kr = "AI 모델을 찾을 수 없습니다. 관리자에게 문의하세요.";
+  else if(m.includes("403") || m.includes("permission")) kr = "접근 권한이 없습니다. 한컴 계정으로 로그인해주세요.";
+  else if(m.includes("500") || m.includes("internal")) kr = "서버 내부 오류입니다. 잠시 후 다시 시도해주세요.";
+  else if(m.includes("시간 초과") || m.includes("timeout")) kr = "응답 시간이 초과되었습니다. 다시 시도해주세요.";
+  else if(m.includes("서버 연결 실패")) kr = "서버에 연결할 수 없습니다. 텍스트를 줄이거나 잠시 후 다시 시도해주세요.";
+  else if(m.includes("API 키")) kr = "API 키가 설정되지 않았습니다. 관리자에게 문의하세요.";
+  document.getElementById("errorText").textContent=kr;
+  document.getElementById("errorBox").classList.add("active");
+}1
     function hideError(){document.getElementById("errorBox").classList.remove("active");}
     function showDlProgress(m){document.getElementById("dlProgress").classList.add("active");document.getElementById("dlProgressText").textContent=m;}
     function updateDlProgress(m){document.getElementById("dlProgressText").textContent=m;}
