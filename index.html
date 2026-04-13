@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>뭐였더라 — 슬라이드 생성기</title>
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <style>
+    /* ============================================
+       한컴 디자인 시스템 — CSS Variables
+       ============================================ */
+    :root {
+      --hcm-orange: #FC5E20;
+      --hcm-blue: #0071E3;
+      --hcm-mint: #28CD41;
+      --hcm-purple: #A259FF;
+      --hcm-rose: #FF375F;
+
+      --bg-primary: #000000;
+      --bg-card: #1C1C1E;
+      --border-card: 1px solid rgba(255,255,255,0.1);
+      --text-primary: #FFFFFF;
+      --text-secondary: #A1A1A6;
+      --text-tertiary: #636366;
+    }
+
+    /* ============================================
+       Reset & Base
+       ============================================ */
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============================================
+       Layout
+       ============================================ */
+    .app-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+
+    /* ============================================
+       Header
+       ============================================ */
+    .app-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo-area svg {
+      flex-shrink: 0;
+    }
+
+    .app-title {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .app-title .accent {
+      color: var(--hcm-orange);
+    }
+
+    .app-subtitle {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       Input Section
+       ============================================ */
+    .input-section {
+      background: var(--bg-card);
+      border: var(--border-card);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-label .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--hcm-orange);
+    }
+
+    .text-input {
+      width: 100%;
+      min-height: 200px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.7;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .text-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .text-input:focus {
+      border-color: var(--hcm-orange);
+    }
+
+    /* ============================================
+       Options Row
+       ============================================ */
+    .options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .slide-count-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: var(--border-card);
+      border-radius: 14px;
+      padding: 10px 20px;
+    }
+
+    .slide-count-selector label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .count-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .count-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--hcm-orange);
+    }
+
+    .count-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 24px;
+      text-align: center;
+    }
+
+    /* ============================================
+       Generate Button
+       ============================================ */
+    .generate-btn {
+      flex: 1;
+      height: 52px;
+      border-radius: 14px;
+      border: none;
+      background: var(--hcm-orange);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .generate-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .generate-btn .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* ============================================
+       Loading State
+       ============================================ */
+    .loading-overlay {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: var(--hcm-orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 24px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .loading-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================
+       Result Section
+       ============================================ */
+    .result-section {
+      display: none;
+    }
+
+    .result-section.active {
+      display: block;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .result-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .result-title .bar {
+      width: 4px;
+      height: 24px;
+      background: var(--hcm-orange);
+      border-radius: 2px;
+    }
+
+    .result-title h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      height: 40px;
+      padding: 0 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .action-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--hcm-orange);
+    }
+
+    .action-btn.primary {
+      background: var(--hcm-orange);
+      border-color: var(--hcm-orange);
+    }
+
+    .action-btn.primary:hover {
+      filter: brightness(1.1);
+    }
+
+    /* ============================================
+       Preview Frame
+       ============================================ */
+    .preview-wrapper {
+      background: var(--bg-card);
+      border: var(--border-card);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .preview-frame {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    .preview-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 12px 0 0;
+    }
+
+    .nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--hcm-orange);
+    }
+
+    .nav-info {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .nav-info .current {
+      color: var(--hcm-orange);
+      font-weight: 700;
+    }
+
+    /* ============================================
+       Error State
+       ============================================ */
+    .error-box {
+      display: none;
+      background: rgba(255,55,95,0.1);
+      border: 1px solid rgba(255,55,95,0.3);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .error-box.active {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .error-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      color: var(--hcm-rose);
+    }
+
+    .error-text {
+      font-size: 14px;
+      color: var(--hcm-rose);
+      line-height: 1.5;
+    }
+
+    /* ============================================
+       Footer
+       ============================================ */
+    .app-footer {
+      text-align: center;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .app-footer p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    /* ============================================
+       Responsive
+       ============================================ */
+    @media (max-width: 600px) {
+      .app-container {
+        padding: 32px 16px 80px;
+      }
+
+      .app-title {
+        font-size: 28px;
+      }
+
+      .input-section {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .options-row {
+        flex-direction: column;
+      }
+
+      .slide-count-selector {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .generate-btn {
+        width: 100%;
+      }
+
+      .result-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- ====== Header ====== -->
+    <header class="app-header">
+      <div class="logo-area">
+        <svg width="120" height="30" viewBox="0 0 285 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M68.3279 15.2893L53.7202 55.8272H62.2753L64.9525 48.1139H81.1314L83.8085 55.8272H92.4219L77.814 15.2893H68.3279ZM67.1639 41.6184L73.042 24.6843L78.9197 41.6184H67.1639Z" fill="white"/>
+          <path d="M122.219 43.1265L103.77 15.2893H95.6221V55.8272H103.77V28.0478L122.219 55.8272H130.366V15.2893H122.219V43.1265Z" fill="white"/>
+          <path d="M149.483 23.7856C151.326 22.6835 153.431 22.1327 155.798 22.1327C158.009 22.1327 159.959 22.6164 161.647 23.5822C163.334 24.5495 164.644 25.999 165.575 27.9321H174.945C173.587 23.8344 171.2 20.6249 167.787 18.305C164.372 15.9854 160.396 14.8254 155.856 14.8254C151.976 14.8254 148.474 15.7053 145.351 17.4642C142.228 19.2237 139.764 21.6786 137.96 24.8295C136.156 27.981 135.254 31.5477 135.254 35.5289C135.254 39.5117 136.156 43.0684 137.96 46.2C139.764 49.3317 142.228 51.7776 145.351 53.5364C148.474 55.2957 151.976 56.1751 155.856 56.1751C160.434 56.1751 164.42 55.0247 167.816 52.7243C171.21 50.4245 173.587 47.2057 174.945 43.0684H165.575C164.644 45.002 163.334 46.461 161.647 47.4464C159.959 48.4327 158.009 48.9257 155.798 48.9257C153.431 48.9257 151.326 48.3746 149.483 47.2726C147.64 46.1707 146.204 44.6048 145.177 42.575C144.148 40.5451 143.634 38.1967 143.634 35.5287C143.634 32.8231 144.148 30.4644 145.177 28.4539C146.204 26.4443 147.64 24.8871 149.483 23.7856Z" fill="white"/>
+          <path d="M208.728 17.4349C205.566 15.657 202.065 14.7671 198.223 14.7671C194.421 14.7671 190.929 15.657 187.748 17.4349C184.566 19.2137 182.045 21.6786 180.182 24.8293C178.32 27.981 177.389 31.5277 177.389 35.4713C177.389 39.4536 178.32 43.0203 180.182 46.1708C182.044 49.3224 184.566 51.7873 187.748 53.5649C190.929 55.3438 194.421 56.2325 198.223 56.2325C202.026 56.2325 205.518 55.3435 208.699 53.5649C211.88 51.7871 214.393 49.3224 216.236 46.1708C218.078 43.0203 219 39.4536 219 35.4713C219 31.5277 218.078 27.981 216.236 24.8293C214.393 21.6789 211.89 19.2137 208.728 17.4349ZM209.048 42.6045C208.001 44.6541 206.546 46.2291 204.683 47.3312C202.821 48.4328 200.668 48.9836 198.223 48.9836C195.779 48.9836 193.616 48.433 191.734 47.3312C189.852 46.2291 188.388 44.6541 187.341 42.6045C186.293 40.5557 185.77 38.1779 185.77 35.4716C185.77 32.7655 186.293 30.3968 187.341 28.367C188.388 26.3374 189.852 24.7815 191.734 23.6987C193.616 22.6164 195.779 22.0746 198.223 22.0746C200.668 22.0746 202.821 22.6164 204.683 23.6987C206.546 24.7815 208.001 26.3374 209.048 28.367C210.096 30.3968 210.62 32.7655 210.62 35.4716C210.62 38.1779 210.096 40.5557 209.048 42.6045Z" fill="white"/>
+          <path d="M258.982 15.3472L246.062 45.4459L233.142 15.3472H223.888V55.8272H232.036V29.4981L242.977 55.8272H249.146L260.029 29.4981V55.8272H268.177V15.3472H258.982Z" fill="white"/>
+          <path d="M24.9666 15.3472H16.8232V31.2013H24.9666V15.3472Z" fill="white"/>
+          <path d="M24.9666 39.3225H16.8232V55.8268H24.9666V39.3225Z" fill="white"/>
+          <path d="M50.5198 15.3472H42.3765V31.2013H50.5198V15.3472Z" fill="white"/>
+          <path d="M50.5195 31.2043H24.9663V39.3189H50.5195V31.2043Z" fill="#FC5E20"/>
+          <path d="M50.5198 39.3225H42.3765V55.8268H50.5198V39.3225Z" fill="white"/>
+        </svg>
+      </div>
+      <h1 class="app-title"><span class="accent">뭐였더라</span> 슬라이드 생성기</h1>
+      <p class="app-subtitle">텍스트를 입력하면 한컴 브랜드 스타일의 슬라이드를 자동으로 생성합니다</p>
+    </header>
+
+    <!-- ====== Input ====== -->
+    <div class="input-section">
+      <div class="section-label">
+        <span class="dot"></span>
+        내용 입력
+      </div>
+      <textarea
+        id="userInput"
+        class="text-input"
+        placeholder="여기에 발표 내용, 회의록, 기획안 등을 붙여넣으세요.&#10;&#10;예시:&#10;• AI 기반 회의록 자동 요약 서비스의 핵심 기능 소개&#10;• Q2 매출 실적 보고 및 하반기 전략&#10;• 신규 서비스 런칭 제안서"
+      ></textarea>
+    </div>
+
+    <!-- ====== Options + Generate ====== -->
+    <div class="options-row">
+      <div class="slide-count-selector">
+        <label>슬라이드 장수</label>
+        <div class="count-control">
+          <button class="count-btn" onclick="changeCount(-1)">−</button>
+          <span id="slideCount" class="count-value">5</span>
+          <button class="count-btn" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+      <button id="generateBtn" class="generate-btn" onclick="generateSlides()">
+        <span class="btn-content">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          슬라이드 생성하기
+        </span>
+      </button>
+    </div>
+
+    <!-- ====== Error ====== -->
+    <div id="errorBox" class="error-box">
+      <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span id="errorText" class="error-text"></span>
+    </div>
+
+    <!-- ====== Loading ====== -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="spinner"></div>
+      <p class="loading-text">슬라이드를 생성하고 있어요</p>
+      <p class="loading-sub" id="loadingSub">Gemini가 한컴 스타일로 디자인 중...</p>
+    </div>
+
+    <!-- ====== Result ====== -->
+    <div id="resultSection" class="result-section">
+      <div class="result-header">
+        <div class="result-title">
+          <span class="bar"></span>
+          <h2>생성 결과</h2>
+        </div>
+        <div class="result-actions">
+          <button class="action-btn" onclick="openInNewTab()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            새 탭에서 열기
+          </button>
+          <button class="action-btn primary" onclick="downloadHTML()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            HTML 다운로드
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-wrapper">
+        <iframe id="previewFrame" class="preview-frame"></iframe>
+        <div class="preview-nav">
+          <button class="nav-btn" onclick="navigateSlide(-1)">◀</button>
+          <span class="nav-info">
+            <span class="current" id="currentSlide">1</span>
+            <span>/ <span id="totalSlides">1</span></span>
+          </span>
+          <button class="nav-btn" onclick="navigateSlide(1)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Footer ====== -->
+    <footer class="app-footer">
+      <p>© 2026 한글과컴퓨터 · 크루 뭐였더라</p>
+    </footer>
+
+  </div>
+
+  <!-- ============================================
+       JavaScript
+       ============================================ -->
+  <script>
+    // ✅ 여기에 GAS 웹 앱 URL을 넣으세요
+    const GAS_URL = "https://script.google.com/a/macros/hancom.com/s/AKfycbwfAQfCx0hfnGMnv4jInzNsLyFAlxF_89tav1v_1iQdxQyYR2G9iRKilhxjT2s8XRZ6/exec";
+
+    let generatedHTML = "";
+    let currentSlideIndex = 0;
+    let totalSlideCount = 0;
+    let slideCount = 5;
+
+    // 로딩 메시지 순환
+    const loadingMessages = [
+      "Gemini가 한컴 스타일로 디자인 중...",
+      "슬라이드 구조를 잡고 있어요...",
+      "브랜드 컬러를 입히는 중...",
+      "거의 다 됐어요, 조금만 기다려주세요..."
+    ];
+
+    // ---- 슬라이드 장수 조절 ----
+    function changeCount(delta) {
+      slideCount = Math.max(1, Math.min(10, slideCount + delta));
+      document.getElementById("slideCount").textContent = slideCount;
+    }
+
+    // ---- 슬라이드 생성 ----
+    async function generateSlides() {
+      const text = document.getElementById("userInput").value.trim();
+      if (!text) {
+        showError("텍스트를 입력해주세요.");
+        return;
+      }
+
+      // UI 상태 변경
+      hideError();
+      hideResult();
+      showLoading();
+      document.getElementById("generateBtn").disabled = true;
+
+      // 로딩 메시지 순환
+      let msgIndex = 0;
+      const msgInterval = setInterval(() => {
+        msgIndex = (msgIndex + 1) % loadingMessages.length;
+        document.getElementById("loadingSub").textContent = loadingMessages[msgIndex];
+      }, 3000);
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ text: text, slideCount: slideCount }),
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || "알 수 없는 오류가 발생했습니다.");
+        }
+
+        generatedHTML = data.html;
+
+        // 미리보기 렌더링
+        renderPreview(generatedHTML);
+        showResult();
+
+      } catch (error) {
+        showError("생성 중 오류가 발생했어요: " + error.message);
+      } finally {
+        clearInterval(msgInterval);
+        hideLoading();
+        document.getElementById("generateBtn").disabled = false;
+      }
+    }
+
+    // ---- 미리보기 렌더링 ----
+    function renderPreview(html) {
+      const iframe = document.getElementById("previewFrame");
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(html);
+      doc.close();
+
+      // 슬라이드 개수 파악 & 네비게이션 설정
+      iframe.onload = function() {
+        const slides = doc.querySelectorAll(".slide-container");
+        totalSlideCount = Math.max(slides.length, 1);
+        currentSlideIndex = 0;
+        document.getElementById("totalSlides").textContent = totalSlideCount;
+        document.getElementById("currentSlide").textContent = 1;
+
+        if (slides.length > 0) {
+          scrollToSlide(0);
+        }
+      };
+
+      // onload가 안 먹을 때를 위한 백업
+      setTimeout(() => {
+        const slides = doc.querySelectorAll(".slide-container");
+        if (slides.length > 0) {
+          totalSlideCount = slides.length;
+          document.getElementById("totalSlides").textContent = totalSlideCount;
+        }
+      }, 1000);
+    }
+
+    // ---- 슬라이드 네비게이션 ----
+    function navigateSlide(delta) {
+      currentSlideIndex = Math.max(0, Math.min(totalSlideCount - 1, currentSlideIndex + delta));
+      document.getElementById("currentSlide").textContent = currentSlideIndex + 1;
+      scrollToSlide(currentSlideIndex);
+    }
+
+    function scrollToSlide(index) {
+      const iframe = document.getElementById("previewFrame");
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const slides = doc.querySelectorAll(".slide-container");
+      if (slides[index]) {
+        slides[index].scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    // ---- 새 탭에서 열기 ----
+    function openInNewTab() {
+      if (!generatedHTML) return;
+      const newWindow = window.open("", "_blank");
+      newWindow.document.write(generatedHTML);
+      newWindow.document.close();
+    }
+
+    // ---- HTML 다운로드 ----
+    function downloadHTML() {
+      if (!generatedHTML) return;
+      const blob = new Blob([generatedHTML], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "hancom-slide-" + new Date().toISOString().slice(0, 10) + ".html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- UI 헬퍼 ----
+    function showLoading() {
+      document.getElementById("loadingOverlay").classList.add("active");
+    }
+    function hideLoading() {
+      document.getElementById("loadingOverlay").classList.remove("active");
+    }
+    function showResult() {
+      document.getElementById("resultSection").classList.add("active");
+    }
+    function hideResult() {
+      document.getElementById("resultSection").classList.remove("active");
+    }
+    function showError(msg) {
+      document.getElementById("errorText").textContent = msg;
+      document.getElementById("errorBox").classList.add("active");
+    }
+    function hideError() {
+      document.getElementById("errorBox").classList.remove("active");
+    }
+  </script>
+
+</body>
+</html>
