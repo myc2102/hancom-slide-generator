@@ -7,8 +7,8 @@
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/nickthedude/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- ✅ PptxGenJS 정상 CDN (bundle = JSZip 포함) -->
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs/dist/pptxgen.bundle.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <style>
     :root { --hcm-orange:#FC5E20; --bg-primary:#000000; --bg-card:#1C1C1E; --border-card:1px solid rgba(255,255,255,0.1); --text-primary:#FFFFFF; --text-secondary:#A1A1A6; --text-tertiary:#636366; }
@@ -67,8 +67,6 @@
     .action-row{display:flex;gap:10px;margin-bottom:20px;}
     .action-btn{height:40px;padding:0 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
     .action-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
-
-    /* ✅ iframe 기반 미리보기 — 스타일 오염 방지 */
     .preview-wrapper{background:var(--bg-card);border:var(--border-card);border-radius:20px;padding:20px;margin-bottom:16px;}
     .preview-iframe-container{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;background:#000;}
     .preview-iframe-container iframe{position:absolute;top:0;left:0;width:1920px;height:1080px;border:none;transform-origin:top left;}
@@ -77,7 +75,6 @@
     .nav-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
     .nav-info{font-size:13px;font-weight:500;color:var(--text-secondary);}
     .nav-info .current{color:var(--hcm-orange);font-weight:700;}
-
     .dl-progress{display:none;align-items:center;gap:12px;background:rgba(252,94,32,0.1);border:1px solid rgba(252,94,32,0.3);border-radius:12px;padding:14px 20px;margin-bottom:20px;}
     .dl-progress.active{display:flex;}
     .dl-progress .mini-spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--hcm-orange);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
@@ -88,7 +85,8 @@
     .error-text{font-size:14px;color:#FF375F;line-height:1.5;}
     .app-footer{text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);}
     .app-footer p{font-size:12px;color:var(--text-tertiary);}
-    #captureZone{position:fixed;left:-99999px;top:0;width:1920px;overflow:hidden;}
+    /* ✅ 캡처용 숨김 영역 — 각 슬라이드를 개별 iframe으로 캡처 */
+    #captureZone{position:fixed;left:-99999px;top:0;width:1920px;overflow:visible;}
     @media(max-width:600px){
       .app-container{padding:32px 16px 80px;}.app-title{font-size:28px;}.input-section{padding:20px;border-radius:20px;}
       .options-grid{grid-template-columns:1fr;}.generate-btn{height:52px;font-size:16px;}
@@ -105,12 +103,10 @@
       <h1 class="app-title"><span class="accent">뭐였더라</span> 슬라이드 생성기</h1>
       <p class="app-subtitle">텍스트를 입력하면 한컴 브랜드 스타일의 슬라이드를 자동으로 생성합니다</p>
     </header>
-
     <div class="input-section">
       <div class="section-label"><span class="dot"></span>내용 입력</div>
       <textarea id="userInput" class="text-input" placeholder="여기에 발표 내용, 회의록, 기획안 등을 붙여넣으세요.&#10;&#10;예시:&#10;• AI 기반 회의록 자동 요약 서비스의 핵심 기능 소개&#10;• Q2 매출 실적 보고 및 하반기 전략&#10;• 신규 서비스 런칭 제안서"></textarea>
     </div>
-
     <div class="options-grid">
       <div class="option-card">
         <label>테마</label>
@@ -128,30 +124,25 @@
         </div>
       </div>
     </div>
-
     <div class="style-section">
       <input type="text" id="designStyle" class="style-input" placeholder="디자인 스타일을 입력하세요 (선택사항)">
       <p class="style-hint">예: 애플스러운 모던함 / 카드 그리드 중심 / 데이터 시각화 강조 / 타임라인 흐름으로</p>
     </div>
-
     <button id="generateBtn" class="generate-btn" onclick="generateSlides()">
       <span class="btn-content">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         슬라이드 생성하기
       </span>
     </button>
-
     <div id="errorBox" class="error-box">
       <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
       <span id="errorText" class="error-text"></span>
     </div>
-
     <div id="loadingOverlay" class="loading-overlay">
       <div class="spinner"></div>
       <p class="loading-text">슬라이드를 생성하고 있어요</p>
       <p class="loading-sub" id="loadingSub">Gemini가 한컴 스타일로 디자인 중...</p>
     </div>
-
     <div id="resultSection" class="result-section">
       <div class="result-header"><span class="bar"></span><h2>생성 결과</h2></div>
       <div id="dlProgress" class="dl-progress"><div class="mini-spinner"></div><span class="dl-progress-text" id="dlProgressText">준비 중...</span></div>
@@ -164,8 +155,6 @@
       <div class="action-row">
         <button class="action-btn" onclick="openInNewTab()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> 새 탭에서 열기</button>
       </div>
-
-      <!-- ✅ iframe 격리 미리보기 -->
       <div class="preview-wrapper">
         <div class="preview-iframe-container" id="previewContainer">
           <iframe id="previewFrame" sandbox="allow-same-origin allow-scripts"></iframe>
@@ -185,7 +174,6 @@
     const GAS_URL="https://script.google.com/a/macros/hancom.com/s/AKfycbwfAQfCx0hfnGMnv4jInzNsLyFAlxF_89tav1v_1iQdxQyYR2G9iRKilhxjT2s8XRZ6/exec";
     let generatedHTML="",currentSlideIndex=0,totalSlideCount=0,slideCount=5;
     let selectedTheme="dark";
-    // 각 슬라이드를 독립 HTML 문서로 저장
     let slideHTMLDocs=[];
     const loadingMessages=["Gemini가 한컴 스타일로 디자인 중...","슬라이드 구조를 잡고 있어요...","브랜드 컬러를 입히는 중...","거의 다 됐어요, 조금만 기다려주세요..."];
 
@@ -209,28 +197,36 @@
         });
         if(!data.success)throw new Error(data.error||"알 수 없는 오류");
         generatedHTML=data.html;
-        parseAndRenderSlides(generatedHTML);
+        parseSlides(generatedHTML);
+        renderSlideInIframe(0);
         showResult();
-        // 생성 후 결과 영역으로 스크롤
-        document.getElementById("resultSection").scrollIntoView({behavior:"smooth"});
+        setTimeout(()=>{document.getElementById("resultSection").scrollIntoView({behavior:"smooth"});},200);
       }catch(e){showError("생성 중 오류: "+e.message);}
       finally{clearInterval(iv);hideLoading();document.getElementById("generateBtn").disabled=false;}
     }
 
-    // ✅ 슬라이드를 개별 HTML 문서로 파싱
-    function parseAndRenderSlides(html){
+    // ✅ 슬라이드 파싱 — 다양한 선택자로 슬라이드 탐지
+    function parseSlides(html){
       const parser=new DOMParser();
       const doc=parser.parseFromString(html,"text/html");
-      // head 내용 추출 (style, link 등)
       const headContent=doc.head.innerHTML;
-      const slides=doc.querySelectorAll(".slide-container");
-      slideHTMLDocs=[];
 
+      // slide-container 또는 1920px 너비의 div를 모두 찾기
+      let slides=doc.querySelectorAll(".slide-container");
       if(slides.length===0){
-        // slide-container가 없으면 전체를 하나의 슬라이드로
+        // 클래스명이 다를 수 있으니 1920px 너비 div도 찾기
+        slides=doc.querySelectorAll('div[style*="1920"]');
+      }
+      if(slides.length===0){
+        // body 직계 자식 div들을 슬라이드로 간주
+        slides=doc.body.querySelectorAll(":scope > div");
+      }
+
+      slideHTMLDocs=[];
+      if(slides.length<=1){
+        // 1개 이하면 전체를 하나의 슬라이드로
         slideHTMLDocs.push(html);
       } else {
-        // 각 슬라이드를 독립 HTML 문서로 만듦
         slides.forEach(s=>{
           slideHTMLDocs.push(`<!DOCTYPE html><html><head>${headContent}</head><body style="margin:0;padding:0;overflow:hidden;">${s.outerHTML}</body></html>`);
         });
@@ -240,26 +236,18 @@
       currentSlideIndex=0;
       document.getElementById("totalSlides").textContent=totalSlideCount;
       document.getElementById("currentSlide").textContent=1;
-
-      // 첫 슬라이드 렌더링
-      renderSlideInIframe(0);
-
-      // iframe 스케일 적용
-      requestAnimationFrame(()=>{
-        const container=document.getElementById("previewContainer");
-        const iframe=document.getElementById("previewFrame");
-        const scale=container.clientWidth/1920;
-        iframe.style.transform=`scale(${scale})`;
-      });
     }
 
-    // ✅ iframe에 슬라이드 렌더링 (스타일 격리)
     function renderSlideInIframe(index){
       const iframe=document.getElementById("previewFrame");
       const doc=iframe.contentDocument||iframe.contentWindow.document;
-      doc.open();
-      doc.write(slideHTMLDocs[index]);
-      doc.close();
+      doc.open();doc.write(slideHTMLDocs[index]);doc.close();
+      // 스케일 적용
+      requestAnimationFrame(()=>{
+        const container=document.getElementById("previewContainer");
+        const scale=container.clientWidth/1920;
+        iframe.style.transform=`scale(${scale})`;
+      });
     }
 
     function navigateSlide(d){
@@ -272,17 +260,137 @@
     function openInNewTab(){if(!generatedHTML)return;const w=window.open("","_blank");w.document.write(generatedHTML);w.document.close();}
     function downloadHTML(){if(!generatedHTML)return;saveAs(new Blob([generatedHTML],{type:"text/html;charset=utf-8"}),"hancom-slide-"+getDateStr()+".html");}
 
-    async function captureSlides(cb){
-      const zone=document.getElementById("captureZone");zone.innerHTML=generatedHTML;await new Promise(r=>setTimeout(r,2000));
-      const slides=zone.querySelectorAll(".slide-container");
-      if(slides.length===0){const c=await html2canvas(zone,{scale:1,useCORS:true,width:1920,height:1080});zone.innerHTML="";return[c];}
-      const cs=[];for(let i=0;i<slides.length;i++){if(cb)cb(i+1,slides.length);cs.push(await html2canvas(slides[i],{scale:1,useCORS:true,width:1920,height:1080}));}
-      zone.innerHTML="";return cs;
+    // ✅ 캡처 로직 개선 — 각 슬라이드 HTML을 개별로 렌더링 후 캡처
+    async function captureSlides(progressCb){
+      const zone=document.getElementById("captureZone");
+      const canvases=[];
+
+      for(let i=0;i<slideHTMLDocs.length;i++){
+        if(progressCb)progressCb(i+1,slideHTMLDocs.length);
+
+        // 각 슬라이드를 임시 div에 렌더링
+        const tempDiv=document.createElement("div");
+        tempDiv.style.cssText="width:1920px;height:1080px;position:relative;overflow:hidden;";
+
+        // HTML 파싱
+        const parser=new DOMParser();
+        const doc=parser.parseFromString(slideHTMLDocs[i],"text/html");
+
+        // 스타일 복사
+        const styles=doc.querySelectorAll("style");
+        styles.forEach(s=>{
+          const styleEl=document.createElement("style");
+          styleEl.textContent=s.textContent;
+          tempDiv.appendChild(styleEl);
+        });
+
+        // link 태그 (폰트 등) — zone에 한번만 추가
+        if(i===0){
+          const links=doc.querySelectorAll("link[rel='stylesheet']");
+          links.forEach(l=>{
+            const linkEl=document.createElement("link");
+            linkEl.rel="stylesheet";linkEl.href=l.href;
+            zone.appendChild(linkEl);
+          });
+        }
+
+        // body 내용 복사
+        tempDiv.innerHTML+=doc.body.innerHTML;
+        zone.appendChild(tempDiv);
+
+        // 폰트 로딩 대기 (첫 슬라이드만 길게)
+        await new Promise(r=>setTimeout(r,i===0?2500:500));
+
+        // 캡처
+        const canvas=await html2canvas(tempDiv,{
+          scale:1,useCORS:true,
+          width:1920,height:1080,
+          windowWidth:1920,windowHeight:1080
+        });
+        canvases.push(canvas);
+
+        // 임시 div 제거
+        zone.removeChild(tempDiv);
+      }
+
+      // link 태그 정리
+      zone.querySelectorAll("link").forEach(l=>l.remove());
+      return canvases;
     }
 
-    async function downloadPNG(){if(!generatedHTML)return;showDlProgress("PNG 캡처 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("ZIP 생성 중...");const zip=new JSZip();cs.forEach((c,i)=>{zip.file(`slide-${String(i+1).padStart(2,"0")}.png`,c.toDataURL("image/png").split(",")[1],{base64:true});});saveAs(await zip.generateAsync({type:"blob"}),"hancom-slides-"+getDateStr()+".zip");}catch(e){showError("PNG 오류: "+e.message);}finally{hideDlProgress();}}
-    async function downloadPDF(){if(!generatedHTML)return;showDlProgress("PDF 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PDF 생성 중...");const{jsPDF}=window.jspdf,pdf=new jsPDF({orientation:"landscape",unit:"px",format:[1920,1080]});cs.forEach((c,i)=>{if(i>0)pdf.addPage([1920,1080],"landscape");pdf.addImage(c.toDataURL("image/png"),"PNG",0,0,1920,1080);});pdf.save("hancom-slides-"+getDateStr()+".pdf");}catch(e){showError("PDF 오류: "+e.message);}finally{hideDlProgress();}}
-    async function downloadPPTX(){if(!generatedHTML)return;showDlProgress("PPTX 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PPTX 생성 중...");const pptx=new PptxGenJS();pptx.defineLayout({name:"HANCOM",width:13.333,height:7.5});pptx.layout="HANCOM";const zone=document.getElementById("captureZone");zone.innerHTML=generatedHTML;await new Promise(r=>setTimeout(r,500));const slideEls=zone.querySelectorAll(".slide-container");cs.forEach((c,i)=>{updateDlProgress(`슬라이드 ${i+1}/${cs.length} 변환 중...`);const slide=pptx.addSlide();slide.addImage({data:c.toDataURL("image/png"),x:0,y:0,w:13.333,h:7.5});if(slideEls[i]){const txts=slideEls[i].querySelectorAll("h1,h2,h3,h4,p,span,li,td,th,footer");const added=new Set();txts.forEach(el=>{const t=el.innerText?.trim();if(!t||t.length<2||added.has(t))return;added.add(t);const r=el.getBoundingClientRect(),sr=slideEls[i].getBoundingClientRect();const xi=((r.left-sr.left)/1920)*13.333,yi=((r.top-sr.top)/1080)*7.5;const wi=Math.min((r.width/1920)*13.333,13.333-xi),hi=(r.height/1080)*7.5;if(wi<0.3||hi<0.1||xi<0||yi<0||xi>13||yi>7.5)return;const st=window.getComputedStyle(el);slide.addText(t,{x:xi,y:yi,w:wi,h:hi,fontSize:Math.max(8,Math.min(Math.round(parseFloat(st.fontSize)*0.75),60)),fontFace:"Pretendard",color:rgbToHex(st.color),bold:parseInt(st.fontWeight)>=700,valign:"top",wrap:true,transparent:true});});}});zone.innerHTML="";await pptx.writeFile({fileName:"hancom-slides-"+getDateStr()+".pptx"});}catch(e){showError("PPTX 오류: "+e.message);}finally{hideDlProgress();}}
+    async function downloadPNG(){
+      if(!generatedHTML)return;showDlProgress("PNG 캡처 준비 중...");
+      try{
+        const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));
+        updateDlProgress("ZIP 생성 중...");
+        const zip=new JSZip();
+        cs.forEach((c,i)=>{zip.file(`slide-${String(i+1).padStart(2,"0")}.png`,c.toDataURL("image/png").split(",")[1],{base64:true});});
+        saveAs(await zip.generateAsync({type:"blob"}),"hancom-slides-"+getDateStr()+".zip");
+      }catch(e){showError("PNG 오류: "+e.message);}finally{hideDlProgress();}
+    }
+
+    async function downloadPDF(){
+      if(!generatedHTML)return;showDlProgress("PDF 준비 중...");
+      try{
+        const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));
+        updateDlProgress("PDF 생성 중...");
+        const{jsPDF}=window.jspdf;
+        const pdf=new jsPDF({orientation:"landscape",unit:"px",format:[1920,1080]});
+        cs.forEach((c,i)=>{
+          if(i>0)pdf.addPage([1920,1080],"landscape");
+          pdf.addImage(c.toDataURL("image/png"),"PNG",0,0,1920,1080);
+        });
+        pdf.save("hancom-slides-"+getDateStr()+".pdf");
+      }catch(e){showError("PDF 오류: "+e.message);}finally{hideDlProgress();}
+    }
+
+    async function downloadPPTX(){
+      if(!generatedHTML)return;showDlProgress("PPTX 준비 중...");
+      try{
+        const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));
+        updateDlProgress("PPTX 생성 중...");
+
+        const pptx=new PptxGenJS();
+        pptx.defineLayout({name:"HANCOM",width:13.333,height:7.5});
+        pptx.layout="HANCOM";
+
+        cs.forEach((c,i)=>{
+          updateDlProgress(`슬라이드 ${i+1}/${cs.length} 변환 중...`);
+          const slide=pptx.addSlide();
+          // 배경 이미지
+          slide.addImage({data:c.toDataURL("image/png"),x:0,y:0,w:13.333,h:7.5});
+
+          // 텍스트 추출 (해당 슬라이드 HTML에서)
+          const parser=new DOMParser();
+          const doc=parser.parseFromString(slideHTMLDocs[i],"text/html");
+          const tempDiv=document.createElement("div");
+          tempDiv.style.cssText="position:fixed;left:-99999px;top:0;width:1920px;height:1080px;overflow:hidden;";
+          tempDiv.innerHTML=doc.body.innerHTML;
+          // 스타일도 복사
+          doc.querySelectorAll("style").forEach(s=>{
+            const se=document.createElement("style");se.textContent=s.textContent;tempDiv.appendChild(se);
+          });
+          document.body.appendChild(tempDiv);
+
+          const txts=tempDiv.querySelectorAll("h1,h2,h3,h4,p,span,li,td,th");
+          const added=new Set();
+          txts.forEach(el=>{
+            const t=el.innerText?.trim();
+            if(!t||t.length<2||added.has(t))return;added.add(t);
+            const r=el.getBoundingClientRect();
+            const xi=(r.left+99999)/1920*13.333,yi=r.top/1080*7.5;
+            const wi=Math.min(r.width/1920*13.333,13.333-xi),hi=r.height/1080*7.5;
+            if(wi<0.3||hi<0.1||xi<0||yi<0||xi>13||yi>7.5)return;
+            const st=window.getComputedStyle(el);
+            slide.addText(t,{x:xi,y:yi,w:wi,h:hi,fontSize:Math.max(8,Math.min(Math.round(parseFloat(st.fontSize)*0.75),60)),fontFace:"Pretendard",color:rgbToHex(st.color),bold:parseInt(st.fontWeight)>=700,valign:"top",wrap:true,transparent:true});
+          });
+
+          document.body.removeChild(tempDiv);
+        });
+
+        await pptx.writeFile({fileName:"hancom-slides-"+getDateStr()+".pptx"});
+      }catch(e){showError("PPTX 오류: "+e.message);}finally{hideDlProgress();}
+    }
 
     function getDateStr(){return new Date().toISOString().slice(0,10);}
     function rgbToHex(rgb){if(!rgb||rgb==="transparent")return"FFFFFF";const m=rgb.match(/\d+/g);if(!m||m.length<3)return"FFFFFF";return m.slice(0,3).map(x=>parseInt(x).toString(16).padStart(2,"0")).join("").toUpperCase();}
