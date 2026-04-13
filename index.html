@@ -13,11 +13,12 @@
   <style>
     :root { --hcm-orange:#FC5E20; --bg-primary:#000000; --bg-card:#1C1C1E; --border-card:1px solid rgba(255,255,255,0.1); --text-primary:#FFFFFF; --text-secondary:#A1A1A6; --text-tertiary:#636366; }
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;overflow-x:hidden;}
+    html,body{background:var(--bg-primary) !important;color:var(--text-primary) !important;}
+    body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;min-height:100vh;overflow-x:hidden;}
     .app-container{max-width:800px;margin:0 auto;padding:60px 24px 100px;}
     .app-header{text-align:center;margin-bottom:48px;}
     .logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;}
-    .app-title{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin-bottom:8px;}
+    .app-title{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin-bottom:8px;color:#FFFFFF !important;}
     .app-title .accent{color:var(--hcm-orange);}
     .app-subtitle{font-size:15px;font-weight:500;color:var(--text-secondary);line-height:1.6;}
     .input-section{background:var(--bg-card);border:var(--border-card);border-radius:24px;padding:32px;margin-bottom:24px;}
@@ -26,65 +27,51 @@
     .text-input{width:100%;min-height:180px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;color:var(--text-primary);font-family:inherit;font-size:15px;font-weight:500;line-height:1.7;resize:vertical;outline:none;transition:border-color 0.2s;}
     .text-input::placeholder{color:var(--text-tertiary);}
     .text-input:focus{border-color:var(--hcm-orange);}
-
-    /* 옵션 그리드 */
     .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
     .option-card{background:var(--bg-card);border:var(--border-card);border-radius:16px;padding:20px;}
     .option-card label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
-
-    /* 테마 선택 토글 */
     .theme-toggle{display:flex;gap:8px;}
     .theme-btn{flex:1;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-secondary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
     .theme-btn.active{border-color:var(--hcm-orange);background:rgba(252,94,32,0.1);color:var(--hcm-orange);}
     .theme-btn:hover:not(.active){border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);}
-
-    /* 장수 선택 */
     .count-control{display:flex;align-items:center;gap:8px;justify-content:center;}
     .count-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-size:18px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
     .count-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
-    .count-value{font-size:22px;font-weight:700;min-width:32px;text-align:center;}
-
-    /* 디자인 스타일 입력 */
+    .count-value{font-size:22px;font-weight:700;min-width:32px;text-align:center;color:#FFFFFF;}
     .style-section{margin-bottom:24px;}
     .style-input{width:100%;height:48px;background:var(--bg-card);border:var(--border-card);border-radius:14px;padding:0 20px;color:var(--text-primary);font-family:inherit;font-size:14px;font-weight:500;outline:none;transition:border-color 0.2s;}
     .style-input::placeholder{color:var(--text-tertiary);}
     .style-input:focus{border-color:var(--hcm-orange);}
     .style-hint{font-size:12px;color:var(--text-tertiary);margin-top:8px;line-height:1.5;}
-
-    /* 생성 버튼 */
     .generate-btn{width:100%;height:56px;border-radius:16px;border:none;background:var(--hcm-orange);color:#FFF;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:24px;}
     .generate-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
     .generate-btn:disabled{opacity:0.5;cursor:not-allowed;}
     .generate-btn .btn-content{display:flex;align-items:center;justify-content:center;gap:8px;}
-
-    /* 로딩 */
     .loading-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;}
     .loading-overlay.active{display:flex;}
     .spinner{width:48px;height:48px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--hcm-orange);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:24px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .loading-text{font-size:16px;font-weight:700;margin-bottom:8px;}
+    .loading-text{font-size:16px;font-weight:700;margin-bottom:8px;color:#FFFFFF;}
     .loading-sub{font-size:13px;color:var(--text-secondary);}
-
-    /* 결과 */
     .result-section{display:none;}
     .result-section.active{display:block;}
     .result-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
     .result-header .bar{width:4px;height:24px;background:var(--hcm-orange);border-radius:2px;}
-    .result-header h2{font-size:20px;font-weight:700;}
-
+    .result-header h2{font-size:20px;font-weight:700;color:#FFFFFF;}
     .download-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
     .dl-btn{height:42px;padding:0 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
     .dl-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
     .dl-btn.primary{background:var(--hcm-orange);border-color:var(--hcm-orange);}
     .dl-btn.primary:hover{filter:brightness(1.1);}
     .dl-btn .badge{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;background:rgba(255,255,255,0.15);color:var(--text-secondary);}
-
     .action-row{display:flex;gap:10px;margin-bottom:20px;}
     .action-btn{height:40px;padding:0 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
     .action-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
 
-    .preview-wrapper{background:var(--bg-card);border:var(--border-card);border-radius:20px;padding:20px;margin-bottom:16px;overflow:hidden;}
-    .preview-scaler{width:1920px;height:1080px;transform-origin:top left;overflow:hidden;}
+    /* ✅ iframe 기반 미리보기 — 스타일 오염 방지 */
+    .preview-wrapper{background:var(--bg-card);border:var(--border-card);border-radius:20px;padding:20px;margin-bottom:16px;}
+    .preview-iframe-container{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;background:#000;}
+    .preview-iframe-container iframe{position:absolute;top:0;left:0;width:1920px;height:1080px;border:none;transform-origin:top left;}
     .preview-nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 0 0;}
     .nav-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:var(--text-primary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
     .nav-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--hcm-orange);}
@@ -119,25 +106,17 @@
       <p class="app-subtitle">텍스트를 입력하면 한컴 브랜드 스타일의 슬라이드를 자동으로 생성합니다</p>
     </header>
 
-    <!-- 내용 입력 -->
     <div class="input-section">
       <div class="section-label"><span class="dot"></span>내용 입력</div>
       <textarea id="userInput" class="text-input" placeholder="여기에 발표 내용, 회의록, 기획안 등을 붙여넣으세요.&#10;&#10;예시:&#10;• AI 기반 회의록 자동 요약 서비스의 핵심 기능 소개&#10;• Q2 매출 실적 보고 및 하반기 전략&#10;• 신규 서비스 런칭 제안서"></textarea>
     </div>
 
-    <!-- 테마 + 장수 -->
     <div class="options-grid">
       <div class="option-card">
         <label>테마</label>
         <div class="theme-toggle">
-          <button class="theme-btn active" id="themeDark" onclick="setTheme('dark')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            다크
-          </button>
-          <button class="theme-btn" id="themeLight" onclick="setTheme('light')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            라이트
-          </button>
+          <button class="theme-btn active" id="themeDark" onclick="setTheme('dark')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> 다크</button>
+          <button class="theme-btn" id="themeLight" onclick="setTheme('light')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> 라이트</button>
         </div>
       </div>
       <div class="option-card">
@@ -150,13 +129,11 @@
       </div>
     </div>
 
-    <!-- 디자인 스타일 -->
     <div class="style-section">
       <input type="text" id="designStyle" class="style-input" placeholder="디자인 스타일을 입력하세요 (선택사항)">
       <p class="style-hint">예: 애플스러운 모던함 / 카드 그리드 중심 / 데이터 시각화 강조 / 타임라인 흐름으로</p>
     </div>
 
-    <!-- 생성 버튼 -->
     <button id="generateBtn" class="generate-btn" onclick="generateSlides()">
       <span class="btn-content">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -164,20 +141,17 @@
       </span>
     </button>
 
-    <!-- 에러 -->
     <div id="errorBox" class="error-box">
       <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
       <span id="errorText" class="error-text"></span>
     </div>
 
-    <!-- 로딩 -->
     <div id="loadingOverlay" class="loading-overlay">
       <div class="spinner"></div>
       <p class="loading-text">슬라이드를 생성하고 있어요</p>
       <p class="loading-sub" id="loadingSub">Gemini가 한컴 스타일로 디자인 중...</p>
     </div>
 
-    <!-- 결과 -->
     <div id="resultSection" class="result-section">
       <div class="result-header"><span class="bar"></span><h2>생성 결과</h2></div>
       <div id="dlProgress" class="dl-progress"><div class="mini-spinner"></div><span class="dl-progress-text" id="dlProgressText">준비 중...</span></div>
@@ -190,8 +164,12 @@
       <div class="action-row">
         <button class="action-btn" onclick="openInNewTab()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> 새 탭에서 열기</button>
       </div>
-      <div class="preview-wrapper" id="previewWrapper">
-        <div class="preview-scaler" id="previewScaler"></div>
+
+      <!-- ✅ iframe 격리 미리보기 -->
+      <div class="preview-wrapper">
+        <div class="preview-iframe-container" id="previewContainer">
+          <iframe id="previewFrame" sandbox="allow-same-origin allow-scripts"></iframe>
+        </div>
         <div class="preview-nav">
           <button class="nav-btn" onclick="navigateSlide(-1)">◀</button>
           <span class="nav-info"><span class="current" id="currentSlide">1</span> / <span id="totalSlides">1</span></span>
@@ -205,8 +183,10 @@
 
   <script>
     const GAS_URL="https://script.google.com/a/macros/hancom.com/s/AKfycbwfAQfCx0hfnGMnv4jInzNsLyFAlxF_89tav1v_1iQdxQyYR2G9iRKilhxjT2s8XRZ6/exec";
-    let generatedHTML="",currentSlideIndex=0,totalSlideCount=0,slideCount=5,slideElements=[];
+    let generatedHTML="",currentSlideIndex=0,totalSlideCount=0,slideCount=5;
     let selectedTheme="dark";
+    // 각 슬라이드를 독립 HTML 문서로 저장
+    let slideHTMLDocs=[];
     const loadingMessages=["Gemini가 한컴 스타일로 디자인 중...","슬라이드 구조를 잡고 있어요...","브랜드 컬러를 입히는 중...","거의 다 됐어요, 조금만 기다려주세요..."];
 
     function setTheme(t){selectedTheme=t;document.getElementById("themeDark").classList.toggle("active",t==="dark");document.getElementById("themeLight").classList.toggle("active",t==="light");}
@@ -228,28 +208,65 @@
           st.onerror=function(){cl();rej(new Error("서버 연결 실패"));};document.head.appendChild(st);
         });
         if(!data.success)throw new Error(data.error||"알 수 없는 오류");
-        generatedHTML=data.html;renderPreview(generatedHTML);showResult();
+        generatedHTML=data.html;
+        parseAndRenderSlides(generatedHTML);
+        showResult();
+        // 생성 후 결과 영역으로 스크롤
+        document.getElementById("resultSection").scrollIntoView({behavior:"smooth"});
       }catch(e){showError("생성 중 오류: "+e.message);}
       finally{clearInterval(iv);hideLoading();document.getElementById("generateBtn").disabled=false;}
     }
 
-    function renderPreview(html){
-      const scaler=document.getElementById("previewScaler"),wrapper=document.getElementById("previewWrapper");
-      const parser=new DOMParser(),doc=parser.parseFromString(html,"text/html");
-      const styles=doc.querySelectorAll("style, link[rel='stylesheet']");let styleHTML="";styles.forEach(s=>styleHTML+=s.outerHTML);
-      const slides=doc.querySelectorAll(".slide-container");slideElements=[];
-      if(slides.length===0){scaler.innerHTML=styleHTML+doc.body.innerHTML;slideElements=[scaler.innerHTML];totalSlideCount=1;}
-      else{slides.forEach(s=>slideElements.push(s.outerHTML));totalSlideCount=slideElements.length;scaler.innerHTML=styleHTML+slideElements[0];}
-      currentSlideIndex=0;document.getElementById("totalSlides").textContent=totalSlideCount;document.getElementById("currentSlide").textContent=1;
-      requestAnimationFrame(()=>{const w=wrapper.clientWidth-40;const scale=w/1920;scaler.style.transform=`scale(${scale})`;scaler.style.height="1080px";wrapper.style.height=(1080*scale+80)+"px";});
+    // ✅ 슬라이드를 개별 HTML 문서로 파싱
+    function parseAndRenderSlides(html){
+      const parser=new DOMParser();
+      const doc=parser.parseFromString(html,"text/html");
+      // head 내용 추출 (style, link 등)
+      const headContent=doc.head.innerHTML;
+      const slides=doc.querySelectorAll(".slide-container");
+      slideHTMLDocs=[];
+
+      if(slides.length===0){
+        // slide-container가 없으면 전체를 하나의 슬라이드로
+        slideHTMLDocs.push(html);
+      } else {
+        // 각 슬라이드를 독립 HTML 문서로 만듦
+        slides.forEach(s=>{
+          slideHTMLDocs.push(`<!DOCTYPE html><html><head>${headContent}</head><body style="margin:0;padding:0;overflow:hidden;">${s.outerHTML}</body></html>`);
+        });
+      }
+
+      totalSlideCount=slideHTMLDocs.length;
+      currentSlideIndex=0;
+      document.getElementById("totalSlides").textContent=totalSlideCount;
+      document.getElementById("currentSlide").textContent=1;
+
+      // 첫 슬라이드 렌더링
+      renderSlideInIframe(0);
+
+      // iframe 스케일 적용
+      requestAnimationFrame(()=>{
+        const container=document.getElementById("previewContainer");
+        const iframe=document.getElementById("previewFrame");
+        const scale=container.clientWidth/1920;
+        iframe.style.transform=`scale(${scale})`;
+      });
+    }
+
+    // ✅ iframe에 슬라이드 렌더링 (스타일 격리)
+    function renderSlideInIframe(index){
+      const iframe=document.getElementById("previewFrame");
+      const doc=iframe.contentDocument||iframe.contentWindow.document;
+      doc.open();
+      doc.write(slideHTMLDocs[index]);
+      doc.close();
     }
 
     function navigateSlide(d){
-      if(slideElements.length<=1)return;currentSlideIndex=Math.max(0,Math.min(totalSlideCount-1,currentSlideIndex+d));
+      if(totalSlideCount<=1)return;
+      currentSlideIndex=Math.max(0,Math.min(totalSlideCount-1,currentSlideIndex+d));
       document.getElementById("currentSlide").textContent=currentSlideIndex+1;
-      const scaler=document.getElementById("previewScaler"),parser=new DOMParser(),doc=parser.parseFromString(generatedHTML,"text/html");
-      const styles=doc.querySelectorAll("style, link[rel='stylesheet']");let sh="";styles.forEach(s=>sh+=s.outerHTML);
-      scaler.innerHTML=sh+slideElements[currentSlideIndex];
+      renderSlideInIframe(currentSlideIndex);
     }
 
     function openInNewTab(){if(!generatedHTML)return;const w=window.open("","_blank");w.document.write(generatedHTML);w.document.close();}
@@ -265,7 +282,7 @@
 
     async function downloadPNG(){if(!generatedHTML)return;showDlProgress("PNG 캡처 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("ZIP 생성 중...");const zip=new JSZip();cs.forEach((c,i)=>{zip.file(`slide-${String(i+1).padStart(2,"0")}.png`,c.toDataURL("image/png").split(",")[1],{base64:true});});saveAs(await zip.generateAsync({type:"blob"}),"hancom-slides-"+getDateStr()+".zip");}catch(e){showError("PNG 오류: "+e.message);}finally{hideDlProgress();}}
     async function downloadPDF(){if(!generatedHTML)return;showDlProgress("PDF 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PDF 생성 중...");const{jsPDF}=window.jspdf,pdf=new jsPDF({orientation:"landscape",unit:"px",format:[1920,1080]});cs.forEach((c,i)=>{if(i>0)pdf.addPage([1920,1080],"landscape");pdf.addImage(c.toDataURL("image/png"),"PNG",0,0,1920,1080);});pdf.save("hancom-slides-"+getDateStr()+".pdf");}catch(e){showError("PDF 오류: "+e.message);}finally{hideDlProgress();}}
-    async function downloadPPTX(){if(!generatedHTML)return;showDlProgress("PPTX 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PPTX 생성 중...");const pptx=new PptxGenJS();pptx.defineLayout({name:"HANCOM",width:13.333,height:7.5});pptx.layout="HANCOM";const zone=document.getElementById("captureZone");zone.innerHTML=generatedHTML;await new Promise(r=>setTimeout(r,500));const slideEls=zone.querySelectorAll(".slide-container");cs.forEach((c,i)=>{updateDlProgress(`슬라이드 ${i+1}/${cs.length} PPTX 변환 중...`);const slide=pptx.addSlide();slide.addImage({data:c.toDataURL("image/png"),x:0,y:0,w:13.333,h:7.5});if(slideEls[i]){const txts=slideEls[i].querySelectorAll("h1,h2,h3,h4,p,span,li,td,th,footer");const added=new Set();txts.forEach(el=>{const t=el.innerText?.trim();if(!t||t.length<2||added.has(t))return;added.add(t);const r=el.getBoundingClientRect(),sr=slideEls[i].getBoundingClientRect();const xi=((r.left-sr.left)/1920)*13.333,yi=((r.top-sr.top)/1080)*7.5;const wi=Math.min((r.width/1920)*13.333,13.333-xi),hi=(r.height/1080)*7.5;if(wi<0.3||hi<0.1||xi<0||yi<0||xi>13||yi>7.5)return;const st=window.getComputedStyle(el);slide.addText(t,{x:xi,y:yi,w:wi,h:hi,fontSize:Math.max(8,Math.min(Math.round(parseFloat(st.fontSize)*0.75),60)),fontFace:"Pretendard",color:rgbToHex(st.color),bold:parseInt(st.fontWeight)>=700,valign:"top",wrap:true,transparent:true});});}});zone.innerHTML="";await pptx.writeFile({fileName:"hancom-slides-"+getDateStr()+".pptx"});}catch(e){showError("PPTX 오류: "+e.message);}finally{hideDlProgress();}}
+    async function downloadPPTX(){if(!generatedHTML)return;showDlProgress("PPTX 준비 중...");try{const cs=await captureSlides((c,t)=>updateDlProgress(`슬라이드 ${c}/${t} 캡처 중...`));updateDlProgress("PPTX 생성 중...");const pptx=new PptxGenJS();pptx.defineLayout({name:"HANCOM",width:13.333,height:7.5});pptx.layout="HANCOM";const zone=document.getElementById("captureZone");zone.innerHTML=generatedHTML;await new Promise(r=>setTimeout(r,500));const slideEls=zone.querySelectorAll(".slide-container");cs.forEach((c,i)=>{updateDlProgress(`슬라이드 ${i+1}/${cs.length} 변환 중...`);const slide=pptx.addSlide();slide.addImage({data:c.toDataURL("image/png"),x:0,y:0,w:13.333,h:7.5});if(slideEls[i]){const txts=slideEls[i].querySelectorAll("h1,h2,h3,h4,p,span,li,td,th,footer");const added=new Set();txts.forEach(el=>{const t=el.innerText?.trim();if(!t||t.length<2||added.has(t))return;added.add(t);const r=el.getBoundingClientRect(),sr=slideEls[i].getBoundingClientRect();const xi=((r.left-sr.left)/1920)*13.333,yi=((r.top-sr.top)/1080)*7.5;const wi=Math.min((r.width/1920)*13.333,13.333-xi),hi=(r.height/1080)*7.5;if(wi<0.3||hi<0.1||xi<0||yi<0||xi>13||yi>7.5)return;const st=window.getComputedStyle(el);slide.addText(t,{x:xi,y:yi,w:wi,h:hi,fontSize:Math.max(8,Math.min(Math.round(parseFloat(st.fontSize)*0.75),60)),fontFace:"Pretendard",color:rgbToHex(st.color),bold:parseInt(st.fontWeight)>=700,valign:"top",wrap:true,transparent:true});});}});zone.innerHTML="";await pptx.writeFile({fileName:"hancom-slides-"+getDateStr()+".pptx"});}catch(e){showError("PPTX 오류: "+e.message);}finally{hideDlProgress();}}
 
     function getDateStr(){return new Date().toISOString().slice(0,10);}
     function rgbToHex(rgb){if(!rgb||rgb==="transparent")return"FFFFFF";const m=rgb.match(/\d+/g);if(!m||m.length<3)return"FFFFFF";return m.slice(0,3).map(x=>parseInt(x).toString(16).padStart(2,"0")).join("").toUpperCase();}
