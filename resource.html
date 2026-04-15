@@ -3,159 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HANCOM AI Design Hub</title>
+    <title>HANCOM AI Hub</title>
     <style>
-        :root {
-            --hancom-orange: #FC5E20; /* 한컴 포인트 컬러  */
-            --apple-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.3);
-        }
-
-        body {
-            margin: 0;
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); /* 부드러운 데스크탑 배경 */
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
-            display: flex;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* 메인 대시보드 패널 */
-        .glass-panel {
-            width: 900px;
-            height: 600px;
-            background: var(--apple-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* 사이드바 */
-        .sidebar {
-            width: 220px;
-            background: rgba(255, 255, 255, 0.4);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .logo-area { margin-bottom: 40px; padding-left: 10px; }
-        .logo-area svg { width: 140px; height: auto; }
-
-        .nav-item {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #555;
-            transition: 0.2s;
-        }
-        .nav-item:hover { background: rgba(0,0,0,0.05); }
+        :root { --hancom-orange: #FC5E20; --apple-bg: rgba(255, 255, 255, 0.8); }
+        body { margin: 0; background: #e5e5e7; font-family: -apple-system, sans-serif; display: flex; height: 100vh; justify-content: center; align-items: center; }
+        .glass-panel { width: 900px; height: 600px; background: var(--apple-bg); backdrop-filter: blur(30px); border-radius: 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); display: flex; overflow: hidden; border: 1px solid rgba(255,255,255,0.4); }
+        .sidebar { width: 240px; background: rgba(255, 255, 255, 0.3); padding: 40px 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.05); }
+        .nav-item { padding: 14px 18px; margin-bottom: 10px; border-radius: 14px; cursor: pointer; font-size: 15px; font-weight: 500; color: #444; transition: 0.2s; }
         .nav-item.active { background: var(--hancom-orange); color: white; }
-
-        /* 메인 콘텐츠 영역 */
-        .content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-        }
-
-        h2 { font-weight: 700; font-size: 28px; margin-top: 0; color: #1d1d1f; }
-
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            margin-bottom: 25px;
-        }
-
-        textarea {
-            width: 100%;
-            border: 1px solid #efefef;
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 15px;
-            background: #f5f5f7;
-            resize: none;
-            outline: none;
-        }
-
-        .action-btn {
-            background: var(--hancom-orange);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: opacity 0.2s;
-        }
-        .action-btn:hover { opacity: 0.9; }
-
-        /* 결과 미리보기 전용 공간 */
-        #resultPreview {
-            margin-top: 20px;
-            border: 2px dashed #ddd;
-            border-radius: 15px;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        #resultPreview img { max-width: 100%; border-radius: 10px; }
+        .content { flex: 1; padding: 50px; overflow-y: auto; display: flex; flex-direction: column; }
+        h2 { font-size: 32px; margin: 0 0 10px 0; color: #1d1d1f; }
+        .card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-top: 20px; }
+        textarea { width: 100%; border: none; font-size: 16px; outline: none; background: transparent; resize: none; }
+        .action-btn { background: var(--hancom-orange); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 20px; align-self: flex-end; }
+        #resultPreview { margin-top: 30px; flex: 1; border: 2px dashed #d2d2d7; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        #resultPreview img { width: 100%; height: 100%; object-fit: contain; }
+        .hidden-file { display: none; }
     </style>
 </head>
 <body>
 
 <div class="glass-panel">
     <div class="sidebar">
-        <div class="logo-area">
-            <svg viewBox="0 0 285 71" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M68.3274 15.2893L53.7197 55.8272H62.2748L64.952 48.1139H81.1309L83.8081 55.8272H92.4215L77.8135 15.2893H68.3274ZM67.1634 41.6184L73.0416 24.6843L78.9192 41.6184H67.1634Z" fill="black"/>
-                <path d="M122.219 43.1265L103.77 15.2893H95.6221V55.8272H103.77V28.0478L122.219 55.8272H130.366V15.2893H122.219V43.1265Z" fill="black"/>
-                <path d="M149.483 23.7856C151.326 22.6835 153.431 22.1327 155.798 22.1327C158.009 22.1327 159.959 22.6164 161.647 23.5822C163.334 24.5495 164.644 25.999 165.575 27.9321H174.945C173.587 23.8344 171.2 20.6249 167.787 18.305C164.372 15.9854 160.396 14.8254 155.856 14.8254C151.976 14.8254 148.474 15.7053 145.351 17.4642C142.228 19.2237 139.764 21.6786 137.96 24.8295C136.156 27.981 135.254 31.5477 135.254 35.5289C135.254 39.5117 136.156 43.0684 137.96 46.2C139.764 49.3317 142.228 51.7776 145.351 53.5364C148.474 55.2957 151.976 56.1751 155.856 56.1751C160.434 56.1751 164.42 55.0247 167.816 52.7243C171.21 50.4245 173.587 47.2057 174.945 43.0684H165.575C164.644 45.002 163.334 46.461 161.647 47.4464C159.959 48.4327 158.009 48.9257 155.798 48.9257C153.431 48.9257 151.326 48.3746 149.483 47.2726C147.64 46.1707 146.204 44.6048 145.177 42.575C144.148 40.5451 143.634 38.1967 143.634 35.5287C143.634 32.8231 144.148 30.4644 145.177 28.4539C146.204 26.4443 147.64 24.8871 149.483 23.7856Z" fill="black"/>
-                <path d="M208.728 17.4349C205.566 15.657 202.065 14.7671 198.223 14.7671C194.421 14.7671 190.929 15.657 187.748 17.4349C184.566 19.2137 182.045 21.6786 180.182 24.8293C178.32 27.981 177.389 31.5277 177.389 35.4713C177.389 39.4536 178.32 43.0203 180.182 46.1708C182.044 49.3224 184.566 51.7873 187.748 53.5649C190.929 55.3438 194.421 56.2325 198.223 56.2325C202.026 56.2325 205.518 55.3435 208.699 53.5649C211.88 51.7871 214.393 49.3224 216.236 46.1708C218.078 43.0203 219 39.4536 219 35.4713C219 31.5277 218.078 27.981 216.236 24.8293C214.393 21.6789 211.89 19.2137 208.728 17.4349ZM209.048 42.6045C208.001 44.6541 206.546 46.2291 204.683 47.3312C202.821 48.4328 200.668 48.9836 198.223 48.9836C195.779 48.9836 193.616 48.433 191.734 47.3312C189.852 46.2291 188.388 44.6541 187.341 42.6045C186.293 40.5557 185.77 38.1779 185.77 35.4716C185.77 32.7655 186.293 30.3968 187.341 28.367C188.388 26.3374 189.852 24.7815 191.734 23.6987C193.616 22.6164 195.779 22.0746 198.223 22.0746C200.668 22.0746 202.821 22.6164 204.683 23.6987C206.546 24.7815 208.001 26.3374 209.048 28.367C210.096 30.3968 210.62 32.7655 210.62 35.4716C210.62 38.1779 210.096 40.5557 209.048 42.6045Z" fill="black"/>
-                <path d="M258.981 15.3472L246.062 45.4459L233.141 15.3472H223.888V55.8272H232.036V29.4981L242.977 55.8272H249.146L260.029 29.4981V55.8272H268.176V15.3472H258.981Z" fill="black"/>
-                <path d="M24.9666 15.3472H16.8232V31.2013H24.9666V15.3472Z" fill="black"/>
-                <path d="M24.9666 39.3225H16.8232V55.8268H24.9666V39.3225Z" fill="black"/>
-                <path d="M50.5193 15.3472H42.376V31.2013H50.5193V15.3472Z" fill="black"/>
-                <path d="M50.5199 31.2043H24.9668V39.3189H50.5199V31.2043Z" fill="#FC5E20"/>
-                <path d="M50.5193 39.3225H42.376V55.8268H50.5193V39.3225Z" fill="black"/>
-            </svg>
+        <div style="margin-bottom:40px; padding:0 10px;">
+            <svg viewBox="0 0 285 71" fill="none"><path d="M50.5199 31.2043H24.9668V39.3189H50.5199V31.2043Z" fill="#FC5E20"/><path d="M68.3274 15.2893L53.7197 55.8272H62.2748L64.952 48.1139H81.1309L83.8081 55.8272H92.4215L77.8135 15.2893H68.3274ZM67.1634 41.6184L73.0416 24.6843L78.9192 41.6184H67.1634Z" fill="black"/><path d="M122.219 43.1265L103.77 15.2893H95.6221V55.8272H103.77V28.0478L122.219 55.8272H130.366V15.2893H122.219V43.1265Z" fill="black"/><path d="M149.483 23.7856C151.326 22.6835 153.431 22.1327 155.798 22.1327C158.009 22.1327 159.959 22.6164 161.647 23.5822C163.334 24.5495 164.644 25.999 165.575 27.9321H174.945C173.587 23.8344 171.2 20.6249 167.787 18.305C164.372 15.9854 160.396 14.8254 155.856 14.8254C151.976 14.8254 148.474 15.7053 145.351 17.4642C142.228 19.2237 139.764 21.6786 137.96 24.8295C136.156 27.981 135.254 31.5477 135.254 35.5289C135.254 39.5117 136.156 43.0684 137.96 46.2C139.764 49.3317 142.228 51.7776 145.351 53.5364C148.474 55.2957 151.976 56.1751 155.856 56.1751C160.434 56.1751 164.42 55.0247 167.816 52.7243C171.21 50.4245 173.587 47.2057 174.945 43.0684H165.575C164.644 45.002 163.334 46.461 161.647 47.4464C159.959 48.4327 158.009 48.9257 155.798 48.9257C153.431 48.9257 151.326 48.3746 149.483 47.2726C147.64 46.1707 146.204 44.6048 145.177 42.575C144.148 40.5451 143.634 38.1967 143.634 35.5287C143.634 32.8231 144.148 30.4644 145.177 28.4539C146.204 26.4443 147.64 24.8871 149.483 23.7856Z" fill="black"/><path d="M208.728 17.4349C205.566 15.657 202.065 14.7671 198.223 14.7671C194.421 14.7671 190.929 15.657 187.748 17.4349C184.566 19.2137 182.045 21.6786 180.182 24.8293C178.32 27.981 177.389 31.5277 177.389 35.4713C177.389 39.4536 178.32 43.0203 180.182 46.1708C182.044 49.3224 184.566 51.7873 187.748 53.5649C190.929 55.3438 194.421 56.2325 198.223 56.2325C202.026 56.2325 205.518 55.3435 208.699 53.5649C211.88 51.7871 214.393 49.3224 216.236 46.1708C218.078 43.0203 219 39.4536 219 35.4713C219 31.5277 218.078 27.981 216.236 24.8293C214.393 21.6789 211.89 19.2137 208.728 17.4349ZM209.048 42.6045C208.001 44.6541 206.546 46.2291 204.683 47.3312C202.821 48.4328 200.668 48.9836 198.223 48.9836C195.779 48.9836 193.616 48.433 191.734 47.3312C189.852 46.2291 188.388 44.6541 187.341 42.6045C186.293 40.5557 185.77 38.1779 185.77 35.4716C185.77 32.7655 186.293 30.3968 187.341 28.367C188.388 26.3374 189.852 24.7815 191.734 23.6987C193.616 22.6164 195.779 22.0746 198.223 22.0746C200.668 22.0746 202.821 22.6164 204.683 23.6987C206.546 24.7815 208.001 26.3374 209.048 28.367C210.096 30.3968 210.62 32.7655 210.62 35.4716C210.62 38.1779 210.096 40.5557 209.048 42.6045Z" fill="black"/><path d="M258.981 15.3472L246.062 45.4459L233.141 15.3472H223.888V55.8272H232.036V29.4981L242.977 55.8272H249.146L260.029 29.4981V55.8272H268.176V15.3472H258.981Z" fill="black"/><path d="M24.9666 15.3472H16.8232V31.2013H24.9666V15.3472Z" fill="black"/><path d="M24.9666 39.3225H16.8232V55.8268H24.9666V39.3225Z" fill="black"/><path d="M50.5193 15.3472H42.376V31.2013H50.5193V15.3472Z" fill="black"/><path d="M50.5193 39.3225H42.376V55.8268H50.5193V39.3225Z" fill="black"/></svg>
         </div>
-        <div class="nav-item active" id="menuIcon">Asset Generator</div>
-        <div class="nav-item" id="menuBoost">Image Booster</div>
-        <div class="nav-item" id="menuBG">Background Eraser</div>
+        <div class="nav-item active" onclick="setMode('icon')">Asset Generator</div>
+        <div class="nav-item" onclick="setMode('upscale')">Image Booster</div>
+        <div class="nav-item" onclick="setMode('remove_bg')">Background Eraser</div>
     </div>
-
     <div class="content">
-        <h2>Asset Generator</h2>
+        <h2 id="modeTitle">Asset Generator</h2>
         <div class="card">
-            <p style="color: #86868b; font-size: 14px; margin-top: 0;">AI가 한컴 브랜드 가이드를 분석하여 최적의 결과물을 만듭니다.</p>
-            <textarea id="promptInput" rows="4" placeholder="만들고 싶은 아이콘이나 디자인 리소스를 설명하세요..."></textarea>
-            <button class="action-btn" onclick="generate()">Generate Design</button>
+            <textarea id="promptInput" rows="3" placeholder="디자인 컨셉을 설명하세요..."></textarea>
+            <input type="file" id="fileInput" class="hidden-file" onchange="handleFile(this)">
+            <button class="action-btn" onclick="execute()">Generate</button>
         </div>
-
-        <div id="resultPreview">
-            <span style="color: #ccc;">결과물이 여기에 표시됩니다</span>
-        </div>
+        <div id="resultPreview"><span style="color:#8e8e93">결과물이 여기에 표시됩니다.</span></div>
     </div>
 </div>
 
 <script>
-    // GAS 연결 및 로직 구현 부분 (이전 단계에서 작성한 스크립트 결합)
-</script>
+    const GAS_URL = "https://script.google.com/a/macros/hancom.com/s/AKfycbz46tFW8dJn1sG5ILYtHjp3f7Ko77pxW9MjF6wDbZfm6ILr6x55hRJ9Dszs7rXou4aWXw/exec1";
+    let mode = 'icon';
+    let selectedFileBase64 = null;
 
+    function setMode(newMode) {
+        mode = newMode;
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('modeTitle').innerText = event.target.innerText;
+        document.getElementById('promptInput').style.display = (mode === 'icon') ? 'block' : 'none';
+        document.getElementById('fileInput').className = (mode === 'icon') ? 'hidden-file' : '';
+    }
+
+    function handleFile(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = e => selectedFileBase64 = e.target.result.split(',')[1];
+        reader.readAsDataURL(file);
+    }
+
+    async function execute() {
+        const preview = document.getElementById('resultPreview');
+        preview.innerHTML = "<span>Processing...</span>";
+        
+        const payload = { mode: mode, prompt: document.getElementById('promptInput').value, imageBlob: selectedFileBase64 };
+        
+        try {
+            const resp = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const res = await resp.json();
+            if (res.status === 'success') {
+                const imgData = res.data.predictions[0].bytesBase64Encoded;
+                preview.innerHTML = `<img src="data:image/png;base64,${imgData}">`;
+            } else { alert("Error: " + res.message); }
+        } catch (e) { alert("연결 실패!"); }
+    }
+</script>
 </body>
 </html>
