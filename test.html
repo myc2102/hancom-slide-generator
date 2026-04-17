@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한컴 AI 디자인 워크스페이스</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --hancom: #FC5E20; 
+      --hancom-hover: #e54d15;
+      --hancom-light: #FFF5F0;
+      --bg-workspace: #F0EDE8;
+      --bg-panel: #FFFFFF;
+      --bg-sidebar: #2D2A26;
+      --text-main: #2D2A26;
+      --text-sub: #635F59;
+      --border: #E5E1DB;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Pretendard', 'Nunito', sans-serif; 
+      background: var(--bg-workspace); 
+      color: var(--text-main);
+      overflow: hidden; /* 전체 스크롤 방지, 내부 스크롤 사용 */
+    }
+
+    /* ═══ 3단 레이아웃 구조 ═══ */
+    .app-wrapper {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* 1. 슬림 사이드바 (글로벌 내비게이션) */
+    .global-sidebar {
+      width: 72px;
+      background: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      z-index: 100;
+    }
+    .brand-icon {
+      margin-bottom: 30px;
+      color: var(--hancom);
+      font-size: 32px;
+    }
+    .side-tab {
+      width: 100%;
+      padding: 15px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      color: #A09A92;
+      transition: 0.2s;
+    }
+    .side-tab i { font-size: 24px; margin-bottom: 4px; }
+    .side-tab span { font-size: 10px; font-weight: 700; }
+    .side-tab:hover { color: #FFF; }
+    .side-tab.active { color: #FFF; background: rgba(252,94,32,0.15); border-left: 3px solid var(--hancom); }
+
+    /* 2. 컨트롤 패널 (상세 설정) */
+    .control-panel {
+      width: 340px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.02);
+      z-index: 90;
+    }
+    .panel-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header h2 { font-size: 18px; font-weight: 800; }
+    .panel-content {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* 3. 메인 캔버스 (워크스페이스) */
+    .canvas-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .canvas-toolbar {
+      height: 56px;
+      background: #FFF;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .canvas-view {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: #EAE7E2;
+      background-image: radial-gradient(#D1CDC7 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .artboard {
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      max-width: 100%;
+      max-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ═══ UI 구성 요소 (기존 스타일 계승 및 강화) ═══ */
+    .input-label { font-size: 13px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; display: block; }
+    .prompt-textarea {
+      width: 100%; height: 120px;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 12px; font-family: inherit; font-size: 14px; resize: none;
+      transition: 0.2s; background: #F9F8F6;
+    }
+    .prompt-textarea:focus { outline: none; border-color: var(--hancom); background: #FFF; }
+
+    .btn-primary {
+      background: var(--hancom); color: white; border: none;
+      padding: 14px; border-radius: var(--radius); font-weight: 800;
+      width: 100%; cursor: pointer; transition: 0.2s; margin-top: 10px;
+    }
+    .btn-primary:hover { background: var(--hancom-hover); transform: translateY(-1px); }
+
+    .ratio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+    .ratio-item {
+      border: 1.5px solid var(--border); padding: 10px; border-radius: 8px;
+      text-align: center; cursor: pointer; transition: 0.2s;
+    }
+    .ratio-item.active { border-color: var(--hancom); background: var(--hancom-light); color: var(--hancom); }
+    .ratio-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    .ratio-label { font-size: 11px; font-weight: 700; }
+
+    /* 결과물 없음 상태 */
+    .empty-state { text-align: center; color: var(--text-sub); }
+    .empty-state i { font-size: 48px; color: var(--border); margin-bottom: 12px; }
+
+    /* 로더 커스텀 */
+    .loading-overlay {
+      position: absolute; inset: 0; background: rgba(255,255,255,0.8);
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 10;
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--hancom); border-radius: 50%;
+      animation: spin 1s linear infinite; margin-bottom: 12px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #2D2A26; color: white; padding: 12px 24px;
+      border-radius: 50px; font-size: 13px; font-weight: 600;
+      opacity: 0; transition: 0.3s; z-index: 1000;
+    }
+    .toast.show { opacity: 1; bottom: 40px; }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <nav class="global-sidebar">
+    <div class="brand-icon"><i class="material-icons">architecture</i></div>
+    <div class="side-tab active" onclick="switchMode('generate_image', this)">
+      <i class="material-icons">auto_awesome</i>
+      <span>이미지 생성</span>
+    </div>
+    <div class="side-tab" onclick="switchMode('icon', this)">
+      <i class="material-icons">category</i>
+      <span>아이콘</span>
+    </div>
+    <div class="side-tab" onclick="switchMode('remove_bg', this)">
+      <i class="material-icons">layers_clear</i>
+      <span>배경 제거</span>
+    </div>
+    <div class="side-tab" onclick="switchMode('upscale', this)">
+      <i class="material-icons">high_quality</i>
+      <span>고해상도</span>
+    </div>
+  </nav>
+
+  <aside class="control-panel">
+    <div class="panel-header">
+      <h2 id="panel-title">🎨 이미지 생성기</h2>
+    </div>
+    <div class="panel-content">
+      <div id="text-inputs">
+        <label class="input-label">무엇을 만들까요?</label>
+        <textarea id="prompt-input" class="prompt-textarea" placeholder="한컴 브랜드 스타일의 모던한 사무실 풍경..."></textarea>
+      </div>
+
+      <div id="file-inputs" style="display:none;">
+        <label class="input-label">이미지 업로드</label>
+        <div style="border: 2px dashed var(--border); padding: 30px; border-radius: 12px; text-align: center; cursor: pointer;" onclick="document.getElementById('file-input').click()">
+          <i class="material-icons" style="font-size: 32px; color: var(--border);">upload_file</i>
+          <p style="font-size: 12px; font-weight: 600; color: var(--text-sub); margin-top: 8px;">클릭하여 파일 선택</p>
+          <input type="file" id="file-input" style="display:none;" onchange="handleFile(this)">
+        </div>
+        <div id="file-name" style="margin-top:10px; font-size:12px; font-weight:700; color:var(--hancom); display:none;"></div>
+      </div>
+
+      <div id="ratio-section" style="margin-top: 24px;">
+        <label class="input-label">화면 비율</label>
+        <div class="ratio-grid">
+          <div class="ratio-item active" onclick="selectRatio('1:1', this)">
+            <i class="material-icons">square</i>
+            <span class="ratio-label">1:1 정방형</span>
+          </div>
+          <div class="ratio-item" onclick="selectRatio('16:9', this)">
+            <i class="material-icons">rectangle</i>
+            <span class="ratio-label">16:9 와이드</span>
+          </div>
+          <div class="ratio-item" onclick="selectRatio('9:16', this)">
+            <i class="material-icons">stay_current_portrait</i>
+            <span class="ratio-label">9:16 세로형</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="generate()">
+        <span id="btn-text">이미지 생성하기</span>
+      </button>
+      
+      <p style="font-size: 11px; color: var(--text-sub); line-height: 1.6; margin-top: 20px;">
+        💡 <b>Tip:</b> 한컴 전용 스타일 가이드가 적용되어 더 선명하고 정제된 결과물이 생성됩니다. [cite: 2, 12]
+      </p>
+    </div>
+  </aside>
+
+  <main class="canvas-area">
+    <header class="canvas-toolbar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Hancom_Logo.svg" alt="Hancom" height="20">
+        <span style="font-weight: 800; font-size: 13px; color: var(--text-sub);">| AI 리소스 센터</span> [cite: 1, 18]
+      </div>
+      <div id="action-buttons" style="display:none;">
+        <button style="padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: #FFF; font-weight: 700; cursor: pointer; font-size: 12px;" onclick="downloadResult()">다운로드</button>
+      </div>
+    </header>
+
+    <section class="canvas-view">
+      <div class="artboard" id="canvas-board" style="width: 512px; height: 512px;">
+        <div class="empty-state" id="empty-state">
+          <i class="material-icons">brush</i>
+          <p style="font-weight: 700;">작업을 시작해 주세요</p>
+          <p style="font-size: 12px; margin-top: 4px;">왼쪽 설정 패널에서 옵션을 입력하세요.</p>
+        </div>
+        <div id="result-container" style="width: 100%; height: 100%; display: none;">
+          </div>
+        
+        <div class="loading-overlay" id="loader">
+          <div class="spinner"></div>
+          <p style="font-weight: 800; color: var(--hancom);">AI가 리소스를 생성 중입니다...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast">메시지가 표시됩니다.</div>
+
+<script>
+  let currentMode = 'generate_image';
+  let selectedFile = null;
+  let selectedRatio = '1:1';
+
+  function switchMode(mode, el) {
+    currentMode = mode;
+    // 사이드바 UI 업데이트
+    document.querySelectorAll('.side-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+
+    // 패널 콘텐츠 전환
+    const titleMap = {
+      'generate_image': '🎨 이미지 생성기',
+      'icon': '✨ 아이콘 생성기',
+      'remove_bg': '✂️ 배경 제거',
+      'upscale': '🔍 고해상도 변환'
+    };
+    document.getElementById('panel-title').innerText = titleMap[mode];
+    
+    // 입력 필드 가시성 조절
+    const isTextMode = (mode === 'generate_image' || mode === 'icon');
+    document.getElementById('text-inputs').style.display = isTextMode ? 'block' : 'none';
+    document.getElementById('file-inputs').style.display = isTextMode ? 'none' : 'block';
+    document.getElementById('ratio-section').style.display = (mode === 'generate_image') ? 'block' : 'none';
+    
+    // 버튼 텍스트 변경
+    const btnMap = { 'generate_image': '이미지 생성하기', 'icon': '아이콘 만들기', 'remove_bg': '배경 지우기', 'upscale': '변환하기' };
+    document.getElementById('btn-text').innerText = btnMap[mode];
+
+    // 상태 초기화
+    resetCanvas();
+  }
+
+  function selectRatio(ratio, el) {
+    selectedRatio = ratio;
+    document.querySelectorAll('.ratio-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    
+    // 캔버스 사이즈 시각적 조정
+    const board = document.getElementById('canvas-board');
+    if(ratio === '1:1') { board.style.width = '512px'; board.style.height = '512px'; }
+    else if(ratio === '16:9') { board.style.width = '640px'; board.style.height = '360px'; }
+    else if(ratio === '9:16') { board.style.width = '320px'; board.style.height = '568px'; }
+  }
+
+  function handleFile(input) {
+    const file = input.files[0];
+    if (file) {
+      selectedFile = file;
+      document.getElementById('file-name').innerText = '✅ ' + file.name;
+      document.getElementById('file-name').style.display = 'block';
+      showToast('이미지가 업로드되었습니다.');
+    }
+  }
+
+  function resetCanvas() {
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('result-container').style.display = 'none';
+    document.getElementById('action-buttons').style.display = 'none';
+    document.getElementById('result-container').innerHTML = '';
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  async function generate() {
+    const prompt = document.getElementById('prompt-input').value;
+    if ((currentMode.includes('image') || currentMode === 'icon') && !prompt) {
+      showToast('설명을 입력해 주세요.');
+      return;
+    }
+    
+    document.getElementById('loader').style.display = 'flex';
+    
+    // AI 엔진 호출 시뮬레이션 (실제 구현 시 google.script.run 호출)
+    // 예시용 setTimeout
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('result-container').style.display = 'block';
+      document.getElementById('action-buttons').style.display = 'block';
+      
+      // 임시 결과 이미지 배치
+      document.getElementById('result-container').innerHTML = `<img src="https://via.placeholder.com/800" style="width:100%; height:100%; object-fit:cover;">`;
+      showToast('생성이 완료되었습니다!');
+    }, 2000);
+  }
+
+  function downloadResult() {
+    showToast('이미지 다운로드를 시작합니다.');
+  }
+</script>
+
+</body>
+</html>
