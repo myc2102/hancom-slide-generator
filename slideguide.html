@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>디자인 시스템 규칙 정의서</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F5F5FA;
+    color: #1a1a2e;
+    padding: 40px;
+    line-height: 1.6;
+  }
+
+  @media print {
+    body { padding: 20px; background: #fff; }
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    .section { break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd !important; }
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 3px solid #1a1a2e;
+  }
+  .header-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #fff;
+    background: #1a1a2e;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 14px;
+    color: #888;
+  }
+
+  /* Instructions Banner */
+  .instructions {
+    background: linear-gradient(135deg, #EEF2FF, #FDF2F8);
+    border: 1.5px dashed #7C3AED;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.8;
+  }
+  .instructions strong { color: #7C3AED; }
+
+  /* Section */
+  .section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f0f0f5;
+  }
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .section-desc {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: #1a1a2e;
+    padding: 10px 14px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+  th:last-child { border-radius: 0 8px 0 0; }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f5;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover { background: #FAFAFE; }
+
+  .label-cell {
+    font-weight: 600;
+    color: #1a1a2e;
+    white-space: nowrap;
+  }
+  .desc-cell {
+    color: #999;
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  /* Editable cells */
+  .editable {
+    background: #F8F8FC;
+    border: 1.5px solid #E2E2EE;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: 'Pretendard', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a2e;
+    min-width: 100px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .editable:focus {
+    border-color: #2D5BFF;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(45,91,255,0.12);
+  }
+  .editable:hover {
+    border-color: #bbb;
+  }
+
+  /* Color swatch */
+  .color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .color-input {
+    width: 100px;
+  }
+
+  /* Layout preview */
+  .layout-group {
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid #f0f0f5;
+  }
+  .layout-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .layout-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2D5BFF;
+    margin-bottom: 4px;
+  }
+  .layout-desc {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 16px;
+  }
+  .layout-preview {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 16/9;
+    background: #1a1a2e;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+  }
+  .layout-area {
+    position: absolute;
+    border: 1.5px dashed rgba(255,255,255,0.3);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.06);
+  }
+  .layout-area.image-area {
+    border-color: #E94560;
+    color: #E94560;
+    background: rgba(233,69,96,0.1);
+  }
+
+  /* Coordinate table */
+  .coord-table {
+    width: 100%;
+    max-width: 560px;
+  }
+  .coord-table th {
+    font-size: 10px;
+    padding: 6px 10px;
+    background: #f0f0f5;
+    color: #666;
+  }
+  .coord-table th:first-child { border-radius: 6px 0 0 0; }
+  .coord-table th:last-child { border-radius: 0 6px 0 0; }
+  .coord-table td { padding: 8px 10px; font-size: 12px; }
+  .coord-table .editable {
+    font-size: 12px;
+    padding: 5px 8px;
+    min-width: 50px;
+    width: 60px;
+    text-align: center;
+  }
+
+  /* Mode divider */
+  .mode-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .mode-column {
+    padding: 20px;
+    border-radius: 12px;
+    border: 1.5px solid #e2e2ee;
+  }
+  .mode-column.dark-col {
+    background: #1a1a2e;
+  }
+  .mode-column.light-col {
+    background: #FAFAFA;
+  }
+  .mode-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .dark-col .mode-label { color: #E94560; }
+  .light-col .mode-label { color: #2D5BFF; }
+
+  /* Preview box */
+  .typo-preview {
+    padding: 24px;
+    border-radius: 12px;
+    margin-top: 24px;
+  }
+  .typo-preview.dark-preview { background: #1a1a2e; }
+  .typo-preview.light-preview { background: #FAFAFA; border: 1px solid #e2e2ee; }
+  .preview-title { margin-bottom: 8px; }
+  .preview-body { margin-bottom: 8px; }
+  .preview-caption { opacity: 0.6; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 32px 0;
+    color: #ccc;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Instructions -->
+  <div class="instructions no-print">
+    <strong>📝 사용법:</strong> 아래 <span style="background:#F8F8FC;border:1px solid #ddd;padding:2px 6px;border-radius:4px;font-size:12px;">회색 입력칸</span>을 클릭하면 직접 수정할 수 있어요.<br>
+    <strong>저장법:</strong> 수정이 끝나면 <strong>Ctrl+P (맥: Cmd+P) → PDF로 저장</strong>을 누르세요.<br>
+    <strong>컬러 미리보기:</strong> HEX 값을 바꾸면 옆의 컬러 칩이 자동으로 바뀝니다.
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">Text to Design Slide Project</div>
+    <h1>디자인 시스템 규칙 정의서</h1>
+    <p>프로젝트명: <span contenteditable="true" class="editable" style="display:inline-block;min-width:200px;">(여기에 프로젝트명 입력)</span></p>
+    <p style="margin-top:8px;">작성일: <span contenteditable="true" class="editable" style="display:inline-block;min-width:120px;">2026. 04. 22</span></p>
+  </div>
+
+  <!-- ===================== 1. COLOR SYSTEM ===================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#EEF2FF;color:#2D5BFF;">●</div>
+      <div>
+        <div class="section-title">1. 컬러 시스템</div>
+        <div class="section-desc">HEX 값을 수정하면 미리보기 색상이 자동 변경됩니다</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:14%;">항목</th>
+          <th style="width:24%;">설명</th>
+          <th style="width:31%;">🌙 다크모드</th>
+          <th style="width:31%;">☀️ 라이트모드</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label-cell">배경색</td>
+          <td class="desc-cell">슬라이드 전체 배경</td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-d-bg" style="background:#1A1A2E;"></div><input type="text" class="editable color-input" value="#1A1A2E" data-swatch="sw-d-bg" oninput="updateSwatch(this)"></div></td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-l-bg" style="background:#FAFAFA;"></div><input type="text" class="editable color-input" value="#FAFAFA" data-swatch="sw-l-bg" oninput="updateSwatch(this)"></div></td>
+        </tr>
+        <tr>
+          <td class="label-cell">제목색</td>
+          <td class="desc-cell">제목 텍스트 컬러</td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-d-title" style="background:#FFFFFF;"></div><input type="text" class="editable color-input" value="#FFFFFF" data-swatch="sw-d-title" oninput="updateSwatch(this)"></div></td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-l-title" style="background:#1A1A2E;"></div><input type="text" class="editable color-input" value="#1A1A2E" data-swatch="sw-l-title" oninput="updateSwatch(this)"></div></td>
+        </tr>
+        <tr>
+          <td class="label-cell">본문색</td>
+          <td class="desc-cell">본문 텍스트 컬러</td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-d-body" style="background:#B8B8CC;"></div><input type="text" class="editable color-input" value="#B8B8CC" data-swatch="sw-d-body" oninput="updateSwatch(this)"></div></td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-l-body" style="background:#4A4A5A;"></div><input type="text" class="editable color-input" value="#4A4A5A" data-swatch="sw-l-body" oninput="updateSwatch(this)"></div></td>
+        </tr>
+        <tr>
+          <td class="label-cell">강조색</td>
+          <td class="desc-cell">버튼, 하이라이트, 포인트</td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-d-acc" style="background:#E94560;"></div><input type="text" class="editable color-input" value="#E94560" data-swatch="sw-d-acc" oninput="updateSwatch(this)"></div></td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-l-acc" style="background:#2D5BFF;"></div><input type="text" class="editable color-input" value="#2D5BFF" data-swatch="sw-l-acc" oninput="updateSwatch(this)"></div></td>
+        </tr>
+        <tr>
+          <td class="label-cell">보조배경</td>
+          <td class="desc-cell">카드, 박스 배경</td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-d-sub" style="background:#0F3460;"></div><input type="text" class="editable color-input" value="#0F3460" data-swatch="sw-d-sub" oninput="updateSwatch(this)"></div></td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-l-sub" style="background:#E8EDFF;"></div><input type="text" class="editable color-input" value="#E8EDFF" data-swatch="sw-l-sub" oninput="updateSwatch(this)"></div></td>
+        </tr>
+        <tr>
+          <td class="label-cell">구분선</td>
+          <td class="desc-cell">선, 디바이더</td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-d-div" style="background:#2A2A4A;"></div><input type="text" class="editable color-input" value="#2A2A4A" data-swatch="sw-d-div" oninput="updateSwatch(this)"></div></td>
+          <td><div class="color-row"><div class="color-swatch" id="sw-l-div" style="background:#E2E2EE;"></div><input type="text" class="editable color-input" value="#E2E2EE" data-swatch="sw-l-div" oninput="updateSwatch(this)"></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== 2. TYPOGRAPHY ===================== -->
+  <div class="section page-break">
+    <div class="section-header">
+      <div class="section-icon" style="background:#FDF2F8;color:#DB2777;">Aa</div>
+      <div>
+        <div class="section-title">2. 타이포그래피</div>
+        <div class="section-desc">폰트명, 크기(pt), 두께(100~900)를 입력하세요</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:14%;">항목</th>
+          <th style="width:30%;">설명</th>
+          <th style="width:28%;">🌙 다크모드</th>
+          <th style="width:28%;">☀️ 라이트모드</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label-cell">제목 폰트</td>
+          <td class="desc-cell">슬라이드 제목에 사용할 폰트</td>
+          <td><input type="text" class="editable" value="Pretendard" style="width:140px;"></td>
+          <td><input type="text" class="editable" value="Pretendard" style="width:140px;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">제목 크기</td>
+          <td class="desc-cell">단위: pt (포인트)</td>
+          <td><input type="text" class="editable" value="36" style="width:80px;text-align:center;"></td>
+          <td><input type="text" class="editable" value="36" style="width:80px;text-align:center;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">제목 두께</td>
+          <td class="desc-cell">400=보통, 700=볼드, 800=엑스트라볼드</td>
+          <td><input type="text" class="editable" value="800" style="width:80px;text-align:center;"></td>
+          <td><input type="text" class="editable" value="800" style="width:80px;text-align:center;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">본문 폰트</td>
+          <td class="desc-cell">슬라이드 본문에 사용할 폰트</td>
+          <td><input type="text" class="editable" value="Pretendard" style="width:140px;"></td>
+          <td><input type="text" class="editable" value="Pretendard" style="width:140px;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">본문 크기</td>
+          <td class="desc-cell">단위: pt</td>
+          <td><input type="text" class="editable" value="16" style="width:80px;text-align:center;"></td>
+          <td><input type="text" class="editable" value="16" style="width:80px;text-align:center;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">본문 두께</td>
+          <td class="desc-cell">400=보통, 500=미디엄</td>
+          <td><input type="text" class="editable" value="400" style="width:80px;text-align:center;"></td>
+          <td><input type="text" class="editable" value="400" style="width:80px;text-align:center;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">캡션 크기</td>
+          <td class="desc-cell">출처, 부가설명 작은 글씨 (pt)</td>
+          <td><input type="text" class="editable" value="12" style="width:80px;text-align:center;"></td>
+          <td><input type="text" class="editable" value="12" style="width:80px;text-align:center;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">행간</td>
+          <td class="desc-cell">1.0=붙어있음, 1.6=편안, 2.0=넉넉</td>
+          <td><input type="text" class="editable" value="1.6" style="width:80px;text-align:center;"></td>
+          <td><input type="text" class="editable" value="1.6" style="width:80px;text-align:center;"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== 3. LAYOUT PATTERNS ===================== -->
+  <div class="section page-break">
+    <div class="section-header">
+      <div class="section-icon" style="background:#ECFDF5;color:#059669;">▦</div>
+      <div>
+        <div class="section-title">3. 레이아웃 패턴</div>
+        <div class="section-desc">960×540 기준 좌표. x=왼쪽거리, y=위쪽거리, w=너비, h=높이 (px)</div>
+      </div>
+    </div>
+
+    <!-- L1 -->
+    <div class="layout-group">
+      <div class="layout-name">L1. 타이틀 온리</div>
+      <div class="layout-desc">제목과 부제목만 있는 임팩트 슬라이드</div>
+      <div class="layout-preview">
+        <div class="layout-area" style="left:8.3%;top:37%;width:83.3%;height:14.8%;">제목</div>
+        <div class="layout-area" style="left:8.3%;top:55.5%;width:62.5%;height:7.4%;">부제목</div>
+      </div>
+      <table class="coord-table">
+        <thead><tr><th>영역</th><th>x</th><th>y</th><th>w</th><th>h</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">제목</td><td><input type="text" class="editable" value="80"></td><td><input type="text" class="editable" value="200"></td><td><input type="text" class="editable" value="800"></td><td><input type="text" class="editable" value="80"></td><td class="desc-cell">큰 텍스트</td></tr>
+          <tr><td class="label-cell">부제목</td><td><input type="text" class="editable" value="80"></td><td><input type="text" class="editable" value="300"></td><td><input type="text" class="editable" value="600"></td><td><input type="text" class="editable" value="40"></td><td class="desc-cell"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- L2 -->
+    <div class="layout-group">
+      <div class="layout-name">L2. 텍스트 + 이미지</div>
+      <div class="layout-desc">왼쪽 텍스트, 오른쪽 AI 생성 이미지</div>
+      <div class="layout-preview">
+        <div class="layout-area" style="left:6.25%;top:11.1%;width:43.75%;height:11.1%;">제목</div>
+        <div class="layout-area" style="left:6.25%;top:25.9%;width:43.75%;height:59.2%;">본문</div>
+        <div class="layout-area image-area" style="left:54.1%;top:11.1%;width:39.6%;height:74.1%;">🖼 이미지</div>
+      </div>
+      <table class="coord-table">
+        <thead><tr><th>영역</th><th>x</th><th>y</th><th>w</th><th>h</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">제목</td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="420"></td><td><input type="text" class="editable" value="60"></td><td class="desc-cell"></td></tr>
+          <tr><td class="label-cell">본문</td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="140"></td><td><input type="text" class="editable" value="420"></td><td><input type="text" class="editable" value="320"></td><td class="desc-cell"></td></tr>
+          <tr><td class="label-cell">이미지</td><td><input type="text" class="editable" value="520"></td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="380"></td><td><input type="text" class="editable" value="400"></td><td class="desc-cell">AI 생성</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- L3 -->
+    <div class="layout-group page-break">
+      <div class="layout-name">L3. 3단 비교형</div>
+      <div class="layout-desc">3개 항목을 나란히 비교</div>
+      <div class="layout-preview">
+        <div class="layout-area" style="left:6.25%;top:9.2%;width:87.5%;height:11.1%;">제목</div>
+        <div class="layout-area" style="left:6.25%;top:25.9%;width:27.1%;height:59.2%;">컬럼1</div>
+        <div class="layout-area" style="left:36.5%;top:25.9%;width:27.1%;height:59.2%;">컬럼2</div>
+        <div class="layout-area" style="left:66.7%;top:25.9%;width:27.1%;height:59.2%;">컬럼3</div>
+      </div>
+      <table class="coord-table">
+        <thead><tr><th>영역</th><th>x</th><th>y</th><th>w</th><th>h</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">제목</td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="50"></td><td><input type="text" class="editable" value="840"></td><td><input type="text" class="editable" value="60"></td><td class="desc-cell"></td></tr>
+          <tr><td class="label-cell">컬럼1</td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="140"></td><td><input type="text" class="editable" value="260"></td><td><input type="text" class="editable" value="320"></td><td class="desc-cell"></td></tr>
+          <tr><td class="label-cell">컬럼2</td><td><input type="text" class="editable" value="350"></td><td><input type="text" class="editable" value="140"></td><td><input type="text" class="editable" value="260"></td><td><input type="text" class="editable" value="320"></td><td class="desc-cell"></td></tr>
+          <tr><td class="label-cell">컬럼3</td><td><input type="text" class="editable" value="640"></td><td><input type="text" class="editable" value="140"></td><td><input type="text" class="editable" value="260"></td><td><input type="text" class="editable" value="320"></td><td class="desc-cell"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- L4 -->
+    <div class="layout-group">
+      <div class="layout-name">L4. 큰 이미지 + 캡션</div>
+      <div class="layout-desc">AI 이미지가 주인공인 비주얼 슬라이드</div>
+      <div class="layout-preview">
+        <div class="layout-area image-area" style="left:4.2%;top:7.4%;width:91.7%;height:66.7%;">🖼 이미지</div>
+        <div class="layout-area" style="left:6.25%;top:77.8%;width:87.5%;height:7.4%;">캡션</div>
+      </div>
+      <table class="coord-table">
+        <thead><tr><th>영역</th><th>x</th><th>y</th><th>w</th><th>h</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">이미지</td><td><input type="text" class="editable" value="40"></td><td><input type="text" class="editable" value="40"></td><td><input type="text" class="editable" value="880"></td><td><input type="text" class="editable" value="360"></td><td class="desc-cell">AI 생성</td></tr>
+          <tr><td class="label-cell">캡션</td><td><input type="text" class="editable" value="60"></td><td><input type="text" class="editable" value="420"></td><td><input type="text" class="editable" value="840"></td><td><input type="text" class="editable" value="40"></td><td class="desc-cell"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- L5 -->
+    <div class="layout-group">
+      <div class="layout-name">L5. 데이터 강조형</div>
+      <div class="layout-desc">큰 숫자/키워드를 강조하는 슬라이드</div>
+      <div class="layout-preview">
+        <div class="layout-area" style="left:8.3%;top:22.2%;width:83.3%;height:22.2%;font-size:16px;color:rgba(255,255,255,0.7);">강조숫자</div>
+        <div class="layout-area" style="left:8.3%;top:51.8%;width:62.5%;height:14.8%;">설명</div>
+      </div>
+      <table class="coord-table">
+        <thead><tr><th>영역</th><th>x</th><th>y</th><th>w</th><th>h</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td class="label-cell">강조숫자</td><td><input type="text" class="editable" value="80"></td><td><input type="text" class="editable" value="120"></td><td><input type="text" class="editable" value="800"></td><td><input type="text" class="editable" value="120"></td><td class="desc-cell">72pt 이상</td></tr>
+          <tr><td class="label-cell">설명</td><td><input type="text" class="editable" value="80"></td><td><input type="text" class="editable" value="280"></td><td><input type="text" class="editable" value="600"></td><td><input type="text" class="editable" value="80"></td><td class="desc-cell"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===================== 4. SPACING ===================== -->
+  <div class="section page-break">
+    <div class="section-header">
+      <div class="section-icon" style="background:#FFFBEB;color:#D97706;">↔</div>
+      <div>
+        <div class="section-title">4. 여백 & 간격 규칙</div>
+        <div class="section-desc">슬라이드 전체 마진과 요소 간 간격 (단위: px)</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:18%;">항목</th>
+          <th style="width:38%;">설명</th>
+          <th style="width:22%;">🌙 다크모드</th>
+          <th style="width:22%;">☀️ 라이트모드</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="label-cell">슬라이드 너비</td><td class="desc-cell">구글 슬라이드 기본값</td><td><input type="text" class="editable" value="960" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="960" style="width:80px;text-align:center;"></td></tr>
+        <tr><td class="label-cell">슬라이드 높이</td><td class="desc-cell">구글 슬라이드 기본값</td><td><input type="text" class="editable" value="540" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="540" style="width:80px;text-align:center;"></td></tr>
+        <tr><td class="label-cell">상단 여백</td><td class="desc-cell">슬라이드 위쪽 여유 공간</td><td><input type="text" class="editable" value="60" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="60" style="width:80px;text-align:center;"></td></tr>
+        <tr><td class="label-cell">하단 여백</td><td class="desc-cell">슬라이드 아래쪽 여유 공간</td><td><input type="text" class="editable" value="40" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="40" style="width:80px;text-align:center;"></td></tr>
+        <tr><td class="label-cell">좌측 여백</td><td class="desc-cell">슬라이드 왼쪽 여유 공간</td><td><input type="text" class="editable" value="60" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="60" style="width:80px;text-align:center;"></td></tr>
+        <tr><td class="label-cell">우측 여백</td><td class="desc-cell">슬라이드 오른쪽 여유 공간</td><td><input type="text" class="editable" value="60" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="60" style="width:80px;text-align:center;"></td></tr>
+        <tr><td class="label-cell">요소 간 간격</td><td class="desc-cell">텍스트 박스 사이 최소 거리</td><td><input type="text" class="editable" value="20" style="width:80px;text-align:center;"></td><td><input type="text" class="editable" value="20" style="width:80px;text-align:center;"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== 5. IMAGE RULES ===================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#F3EEFF;color:#7C3AED;">◐</div>
+      <div>
+        <div class="section-title">5. AI 이미지 생성 규칙</div>
+        <div class="section-desc">Gemini가 이미지를 만들 때 참고하는 스타일 가이드</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:14%;">항목</th>
+          <th style="width:24%;">설명</th>
+          <th style="width:31%;">🌙 다크모드</th>
+          <th style="width:31%;">☀️ 라이트모드</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label-cell">스타일</td>
+          <td class="desc-cell">이미지의 전체 스타일</td>
+          <td><input type="text" class="editable" value="모던하고 미니멀한 3D 일러스트" style="width:100%;"></td>
+          <td><input type="text" class="editable" value="밝고 깔끔한 플랫 일러스트" style="width:100%;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">비율</td>
+          <td class="desc-cell">이미지 생성 비율</td>
+          <td><input type="text" class="editable" value="16:9 또는 1:1" style="width:100%;"></td>
+          <td><input type="text" class="editable" value="16:9 또는 1:1" style="width:100%;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">분위기</td>
+          <td class="desc-cell">이미지의 무드/톤</td>
+          <td><input type="text" class="editable" value="어둡고 세련된" style="width:100%;"></td>
+          <td><input type="text" class="editable" value="밝고 전문적인" style="width:100%;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">금지 요소</td>
+          <td class="desc-cell">이미지에 넣으면 안 되는 것</td>
+          <td><input type="text" class="editable" value="텍스트, 사람 얼굴" style="width:100%;"></td>
+          <td><input type="text" class="editable" value="텍스트, 사람 얼굴" style="width:100%;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">배경 처리</td>
+          <td class="desc-cell">이미지 배경을 어떻게 할지</td>
+          <td><input type="text" class="editable" value="투명 또는 슬라이드 배경색과 동일" style="width:100%;"></td>
+          <td><input type="text" class="editable" value="투명 또는 슬라이드 배경색과 동일" style="width:100%;"></td>
+        </tr>
+        <tr>
+          <td class="label-cell">컬러톤</td>
+          <td class="desc-cell">이미지에 사용할 컬러 범위</td>
+          <td><input type="text" class="editable" value="강조색 계열 + 무채색" style="width:100%;"></td>
+          <td><input type="text" class="editable" value="강조색 계열 + 밝은톤" style="width:100%;"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== 6. NOTES ===================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#FEF2F2;color:#DC2626;">✎</div>
+      <div>
+        <div class="section-title">6. 추가 메모</div>
+        <div class="section-desc">브랜드 특이사항, 톤앤매너, 기타 규칙 등 자유롭게 작성하세요</div>
+      </div>
+    </div>
+
+    <div contenteditable="true" class="editable" style="width:100%;min-height:120px;line-height:1.8;white-space:pre-wrap;">
+여기에 자유롭게 메모하세요.
+
+예시:
+- 우리 브랜드 톤은 전문적이지만 딱딱하지 않은 느낌
+- 제목에는 반드시 한글만 사용
+- 영문은 모두 대문자로 표기
+- 로고는 슬라이드 우하단에 항상 배치
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Text to Design Slide Project · Design System Definition · 수정 후 Ctrl+P → PDF로 저장하세요
+  </div>
+
+</div>
+
+<script>
+function updateSwatch(input) {
+  const swatchId = input.dataset.swatch;
+  const swatch = document.getElementById(swatchId);
+  if (swatch && input.value.match(/^#[0-9A-Fa-f]{3,8}$/)) {
+    swatch.style.background = input.value;
+  }
+}
+</script>
+
+</body>
+</html>
